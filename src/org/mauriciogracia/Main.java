@@ -11,45 +11,34 @@ public class Main {
     private static ArrayList<DirLanguage> dirList = new ArrayList<DirLanguage>();
     private static ArrayList<String> excludeFolders = new ArrayList<String>();
     private static ArrayList<String> output = new ArrayList<String>();
+    private static ArrayList<String> artifacts = new ArrayList<String>();
 
     private static boolean showFullPath = false ;
     private static boolean showFiles = false ;
     private static boolean compactMode = true ;
     private static boolean withNumFiles = false ;
-    private static boolean layerMode = false ;
+    private static boolean uniqueArtifacts = false ;
 
     private static void InitLanguageExtensions() {
         languages = new ArrayList<LanguageExtensions>() ;
 
-        if(layerMode) {
-            String[] frontEnd = {".ts", ".js", ".html"};
-            languages.add(new LanguageExtensions("frontEnd", frontEnd));
+        String []tsExt = {".ts"} ;
+        languages.add(new LanguageExtensions("Typescript",tsExt)) ;
 
-            String[] backEnd = {".scala", ".java"};
-            languages.add(new LanguageExtensions("backend", backEnd));
+        String []scalaExt = {".scala"} ;
+        languages.add(new LanguageExtensions("Scala",scalaExt)) ;
 
-            String[] buildConf = {".bazel", ".conf"};
-            languages.add(new LanguageExtensions("build-conf", buildConf));
-        }
-        else {
-            String []tsExt = {".ts"} ;
-            languages.add(new LanguageExtensions("Typescript",tsExt)) ;
+        String []javaExt = {".java"} ;
+        languages.add(new LanguageExtensions("Java",javaExt)) ;
 
-            String []scalaExt = {".scala"} ;
-            languages.add(new LanguageExtensions("Scala",scalaExt)) ;
+        String []jsExt = {".js"} ;
+        languages.add(new LanguageExtensions("Javascript",jsExt)) ;
 
-            String []javaExt = {".java"} ;
-            languages.add(new LanguageExtensions("Java",javaExt)) ;
+        String []pythonExt = {".py"} ;
+        languages.add(new LanguageExtensions("Python",pythonExt)) ;
 
-            String []jsExt = {".js"} ;
-            languages.add(new LanguageExtensions("Javascript",jsExt)) ;
-
-            String []pythonExt = {".py"} ;
-            languages.add(new LanguageExtensions("Python",pythonExt)) ;
-
-            String []bazelExt = {".bazel"} ;
-            languages.add(new LanguageExtensions("Bazel",bazelExt)) ;
-        }
+        String []bazelExt = {".bazel"} ;
+        languages.add(new LanguageExtensions("Bazel",bazelExt)) ;
     }
 
     private  static String determineFileLanguage(String fileName) {
@@ -88,34 +77,15 @@ public class Main {
             File folder = new File(currentFolder);
             File[] listOfFiles = folder.listFiles();
             String itemName ;
-            String itemString ;
+            String itemPath ;
+
 
             for (int i = 0; i < listOfFiles.length; i++) {
                 itemName = listOfFiles[i].getName() ;
 
-                itemString = dirPrefix + "/" + itemName;
+                itemPath = dirPrefix + "/" + itemName;
                 if (listOfFiles[i].isDirectory()) {
-                    if(!excludeFolders.contains(itemName)) {
-                        DirLanguage dlSub = new DirLanguage(currentFolder + "/" + itemName);
-                        dirList.add(dlSub);
-                        dlSub.numSubfolders++;
-                        IterateFolder(dlSub);
-
-                        if (dlSub.hastStats()) {
-                            if (compactMode) {
-                                itemString += "|" + determineArtifact(itemString) ;
-                                itemString += "|" + dlSub.isApiService ;
-                                itemString += "|" + dlSub.isTest ;
-                                itemString += "|" + dlSub.getStats(withNumFiles);
-                            } else {
-                                itemString += "|" + determineArtifact(itemString) ;
-                                itemString += "| sf:" + dlSub.numSubfolders;
-                                itemString += "| fi:" + dlSub.numFiles;
-                                itemString += "| stats:" + dlSub.getStats(withNumFiles);
-                            }
-                            output.add(itemString);
-                        }
-                    }
+                    processFolder(itemName, itemPath, currentFolder) ;
                 } else if (listOfFiles[i].isFile()) {
                     String whichLanguage = determineFileLanguage(itemName) ;
                     dl.numFiles++ ;
@@ -125,17 +95,49 @@ public class Main {
                     }
 
                     if(showFiles) {
-                        itemString += "|" + whichLanguage;
-                        output.add(itemString);
+                        itemPath += "|" + whichLanguage;
+                        output.add(itemPath);
                     }
                 } else {
-                    itemString += "|" + "NOT_FILE_NOR_DIR" ;
-                    output.add(itemString);
+                    itemPath += "|" + "NOT_FILE_NOR_DIR" ;
+                    output.add(itemPath);
                 }
             }
         }
         catch (Exception ex) {
             System.err.println("Error:" + ex.getMessage());
+        }
+    }
+
+    private static void processFolder(String itemName, String itemPath, String currentFolder) {
+        String artifactName ;
+
+        if(!excludeFolders.contains(itemName)) {
+            artifactName = determineArtifact(itemPath) ;
+
+            if(!uniqueArtifacts || (uniqueArtifacts && !artifacts.contains(artifactName))) {
+                artifacts.add(artifactName);
+
+                DirLanguage dlSub = new DirLanguage(currentFolder + "/" + itemName);
+                dirList.add(dlSub);
+                dlSub.numSubfolders++;
+                IterateFolder(dlSub);
+
+                if (dlSub.hastStats()) {
+                    if (compactMode) {
+                        itemPath += "|" + artifactName;
+                        itemPath += "|" + dlSub.isApiService;
+                        itemPath += "|" + dlSub.isTest;
+                        itemPath += "|" + dlSub.getStats(withNumFiles);
+                    } else {
+                        itemPath += "|" + artifactName;
+                        itemPath += "| sf:" + dlSub.numSubfolders;
+                        itemPath += "| fi:" + dlSub.numFiles;
+                        itemPath += "| stats:" + dlSub.getStats(withNumFiles);
+                    }
+                }
+                output.add(itemPath);
+            }
         }
     }
 
@@ -159,6 +161,11 @@ public class Main {
         excludeFolders.add("bazel-out") ;
         excludeFolders.add("bazel-testlogs") ;
         excludeFolders.add("output") ;
+        excludeFolders.add(".git") ;
+        excludeFolders.add(".idea") ;
+        excludeFolders.add(".ijwb") ;
+        excludeFolders.add(".metals") ;
+        excludeFolders.add(".vscode") ;
 
         DirLanguage dl = new DirLanguage(rootFolder);
         IterateFolder(dl) ;
