@@ -60,7 +60,7 @@ public class Main {
                     langName = lang.languageName ;
                 }
                 i++  ;
-            } while (i < languages.size() && !match) ;
+            } while (!match && (i < languages.size())) ;
         }
 
         return langName ;
@@ -176,7 +176,7 @@ public class Main {
         Iterator<String> it = output.iterator();
         String line ;
 
-
+        //@todo Propagate/merge the languages from child nodes to parent
         while(it.hasNext()) {
             line = it.next();
             System.out.println(line);
