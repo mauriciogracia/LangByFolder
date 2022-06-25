@@ -8,19 +8,16 @@ import java.util.Iterator;
 public class Main {
     private static String rootFolder = "/home/c-mgracia/press/main";
     private static ArrayList<LanguageExtensions> languages  ;
-    private static ArrayList<DirLanguage> dirList = new ArrayList<DirLanguage>();
-    private static ArrayList<String> excludeFolders = new ArrayList<String>();
-    private static ArrayList<String> output = new ArrayList<String>();
-    private static ArrayList<String> artifacts = new ArrayList<String>();
+    private static ArrayList<ItemLanguage> items = new ArrayList<>();
+    private static ArrayList<String> excludeFolders = new ArrayList<>();
+    private static ArrayList<String> artifacts = new ArrayList<>();
 
-    private static boolean showFullPath = false ;
-    private static boolean showFiles = false ;
-    private static boolean compactMode = true ;
-    private static boolean withNumFiles = false ;
+    private static boolean showFiles = true ;
+    private static boolean compactMode = false ;
     private static boolean uniqueArtifacts = false ;
 
     private static void InitLanguageExtensions() {
-        languages = new ArrayList<LanguageExtensions>() ;
+        languages = new ArrayList<>() ;
 
         String []tsExt = {".ts"} ;
         languages.add(new LanguageExtensions("Typescript",tsExt)) ;
@@ -47,9 +44,9 @@ public class Main {
         int pos = fileName.lastIndexOf('.') ;
 
         if(pos >= 0) {
-            String ext = fileName.substring(pos, fileName.length()) ;
+            String ext = fileName.substring(pos) ;
             int i = 0 ;
-            boolean match = false ;
+            boolean match ;
 
             do {
                 LanguageExtensions lang =languages.get(i) ;
@@ -66,41 +63,33 @@ public class Main {
         return langName ;
     }
 
-    private static String prefix(String currentFolder) {
-        return (showFullPath) ? currentFolder : currentFolder.substring(rootFolder.length()) ;
-    }
-
-    private static void IterateFolder(DirLanguage dl)  {
+    private static void IterateFolder(ItemLanguage itemLanguage)  {
         try {
-            String currentFolder = dl.name;
-            String dirPrefix = prefix(currentFolder) ;
-            File folder = new File(currentFolder);
+            File folder = new File(itemLanguage.itemPath);
             File[] listOfFiles = folder.listFiles();
             String itemName ;
-            String itemPath ;
+            ItemLanguage newIL ;
 
+            if(listOfFiles != null) {
+                for (File listOfFile : listOfFiles) {
+                    itemName = listOfFile.getName();
 
-            for (int i = 0; i < listOfFiles.length; i++) {
-                itemName = listOfFiles[i].getName() ;
+                    if (listOfFile.isDirectory()) {
+                        processFolder(itemLanguage.itemPath, itemName);
+                    } else {
+                        String whichLanguage = determineFileLanguage(itemName);
+                        itemLanguage.numFiles++;
 
-                itemPath = dirPrefix + "/" + itemName;
-                if (listOfFiles[i].isDirectory()) {
-                    processFolder(itemName, itemPath, currentFolder) ;
-                } else if (listOfFiles[i].isFile()) {
-                    String whichLanguage = determineFileLanguage(itemName) ;
-                    dl.numFiles++ ;
+                        if (!whichLanguage.equals("unknown")) {
+                            itemLanguage.addLanguageFileCount(whichLanguage);
+                        }
 
-                    if(!whichLanguage.equals("unknown")) {
-                        dl.addLanguageFileCount(whichLanguage);
+                        if (showFiles) {
+                            newIL = new ItemLanguage(itemLanguage.itemPath + "/" + itemName);
+                            newIL.addLanguageFileCount(whichLanguage);
+                            items.add(newIL);
+                        }
                     }
-
-                    if(showFiles) {
-                        itemPath += "|" + whichLanguage;
-                        output.add(itemPath);
-                    }
-                } else {
-                    itemPath += "|" + "NOT_FILE_NOR_DIR" ;
-                    output.add(itemPath);
                 }
             }
         }
@@ -109,52 +98,27 @@ public class Main {
         }
     }
 
-    private static void processFolder(String itemName, String itemPath, String currentFolder) {
+    private static void processFolder(String itemPath,String itemName) {
         String artifactName ;
 
         if(!excludeFolders.contains(itemName)) {
-            artifactName = determineArtifact(itemPath) ;
+            artifactName = ItemLanguage.determineArtifact(itemPath) ;
 
             if(!uniqueArtifacts || (uniqueArtifacts && !artifacts.contains(artifactName))) {
                 artifacts.add(artifactName);
 
-                DirLanguage dlSub = new DirLanguage(currentFolder + "/" + itemName);
-                dirList.add(dlSub);
+                ItemLanguage dlSub = new ItemLanguage(itemPath + "/" + itemName);
+                dlSub.artifactName = artifactName ;
+                items.add(dlSub);
                 dlSub.numSubfolders++;
                 IterateFolder(dlSub);
-
-                if (dlSub.hastStats()) {
-                    if (compactMode) {
-                        itemPath += "|" + artifactName;
-                        itemPath += "|" + dlSub.isApiService;
-                        itemPath += "|" + dlSub.isTest;
-                        itemPath += "|" + dlSub.getStats(withNumFiles);
-                    } else {
-                        itemPath += "|" + artifactName;
-                        itemPath += "| sf:" + dlSub.numSubfolders;
-                        itemPath += "| fi:" + dlSub.numFiles;
-                        itemPath += "| stats:" + dlSub.getStats(withNumFiles);
-                    }
-                }
-                output.add(itemPath);
             }
         }
     }
 
-    private static String determineArtifact(String path) {
-        int pos ;
 
-        pos = path.indexOf('/', 1);
 
-        //The name of the first level folder is used as the base/component/artifact name
-        if (pos < 0) {
-            pos = path.length() ;
-        }
-        return path.substring(1, pos);
-    }
-
-    public static void main(String[] args) {
-        InitLanguageExtensions() ;
+    private static void InitFoldersToExclude()  {
         excludeFolders.add("node_modules") ;
         excludeFolders.add("bazel-bin") ;
         excludeFolders.add("bazel-main") ;
@@ -166,20 +130,34 @@ public class Main {
         excludeFolders.add(".ijwb") ;
         excludeFolders.add(".metals") ;
         excludeFolders.add(".vscode") ;
+    }
 
-        DirLanguage dl = new DirLanguage(rootFolder);
-        IterateFolder(dl) ;
+    private static void showResults() {
+        String header = "Folder|Artifact|isApiService|isTest|Languages" ;
 
-        Collections.sort(output);
+        if(!compactMode) {
+            header += "|# Folders|# Files" ;
+        }
 
-        System.out.println("Folder|Artifact|isApiService|isTest|Languages") ;
-        Iterator<String> it = output.iterator();
-        String line ;
+        System.out.println(header) ;
 
         //@todo Propagate/merge the languages from child nodes to parent
-        while(it.hasNext()) {
-            line = it.next();
-            System.out.println(line);
+        for (ItemLanguage item : items) {
+            System.out.println(item.toString(compactMode, rootFolder));
         }
+    }
+
+    public static void main(String[] args) {
+        InitLanguageExtensions();
+        InitFoldersToExclude();
+
+        //Iterate the specified folder
+        ItemLanguage.prefixLength = rootFolder.length();
+        ItemLanguage dl = new ItemLanguage(rootFolder);
+        IterateFolder(dl);
+
+        Collections.sort(items);
+
+        showResults() ;
     }
 }
