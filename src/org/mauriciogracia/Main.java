@@ -2,12 +2,15 @@ package org.mauriciogracia;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 
 public class Main {
     private static String rootFolder = "/home/c-mgracia/press/main";
     private static ArrayList<LanguageExtensions> languages  ;
     private static ArrayList<DirLanguage> dirList = new ArrayList<DirLanguage>();
     private static ArrayList<String> excludeFolders = new ArrayList<String>();
+    private static ArrayList<String> output = new ArrayList<String>();
 
     private static boolean showFullPath = false ;
     private static boolean showFiles = false ;
@@ -100,13 +103,17 @@ public class Main {
 
                         if (dlSub.hastStats()) {
                             if (compactMode) {
+                                itemString += "|" + determineArtifact(itemString) ;
+                                itemString += "|" + dlSub.isApiService ;
+                                itemString += "|" + dlSub.isTest ;
                                 itemString += "|" + dlSub.getStats(withNumFiles);
                             } else {
+                                itemString += "|" + determineArtifact(itemString) ;
                                 itemString += "| sf:" + dlSub.numSubfolders;
                                 itemString += "| fi:" + dlSub.numFiles;
                                 itemString += "| stats:" + dlSub.getStats(withNumFiles);
                             }
-                            System.out.println(itemString);
+                            output.add(itemString);
                         }
                     }
                 } else if (listOfFiles[i].isFile()) {
@@ -119,11 +126,11 @@ public class Main {
 
                     if(showFiles) {
                         itemString += "|" + whichLanguage;
-                        System.out.println(itemString);
+                        output.add(itemString);
                     }
                 } else {
                     itemString += "|" + "NOT_FILE_NOR_DIR" ;
-                    System.out.println(itemString);
+                    output.add(itemString);
                 }
             }
         }
@@ -131,6 +138,19 @@ public class Main {
             System.err.println("Error:" + ex.getMessage());
         }
     }
+
+    private static String determineArtifact(String path) {
+        int pos ;
+
+        pos = path.indexOf('/', 1);
+
+        //The name of the first level folder is used as the base/component/artifact name
+        if (pos < 0) {
+            pos = path.length() ;
+        }
+        return path.substring(1, pos);
+    }
+
     public static void main(String[] args) {
         InitLanguageExtensions() ;
         excludeFolders.add("node_modules") ;
@@ -138,8 +158,21 @@ public class Main {
         excludeFolders.add("bazel-main") ;
         excludeFolders.add("bazel-out") ;
         excludeFolders.add("bazel-testlogs") ;
+        excludeFolders.add("output") ;
 
         DirLanguage dl = new DirLanguage(rootFolder);
         IterateFolder(dl) ;
+
+        Collections.sort(output);
+
+        System.out.println("Folder|Artifact|isApiService|isTest|Languages") ;
+        Iterator<String> it = output.iterator();
+        String line ;
+
+
+        while(it.hasNext()) {
+            line = it.next();
+            System.out.println(line);
+        }
     }
 }

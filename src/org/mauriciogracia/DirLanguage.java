@@ -6,12 +6,16 @@ public class DirLanguage {
     public String name ;
     public int numSubfolders;
     public int numFiles ;
+    public boolean isApiService ;
+    public boolean isTest ;
     private ArrayList<DirLanguageStats> langStats ;
 
     public DirLanguage(String dirName) {
+        name = dirName ;
+        isApiService = name.contains("-service") ;
+        isTest = name.contains("test") ;
         numSubfolders = 0 ;
         numFiles = 0 ;
-        name = dirName ;
         langStats = new ArrayList<DirLanguageStats>() ;
     }
 
