@@ -82,6 +82,25 @@ public class ItemLanguage implements Comparable<ItemLanguage>{
 
         return langStatsStr.toString();
     }
+
+    public void mergeStats(ItemLanguage subFolder) {
+        int pos ;
+        this.numFiles += subFolder.numFiles ;
+        this.numSubfolders += subFolder.numSubfolders ;
+
+        for(DirLanguageStats dls : subFolder.langStats) {
+            pos = langStats.indexOf(dls) ;
+
+            if(pos >= 0)
+            {
+                langStats.get(pos).numFiles += dls.numFiles ;
+            }
+            else {
+                langStats.add(dls) ;
+            }
+        }
+    }
+
     private static String relativePath(String folder, String rootFolder) {
         return folder.substring(rootFolder.length()) ;
     }
@@ -90,17 +109,14 @@ public class ItemLanguage implements Comparable<ItemLanguage>{
         String resp ;
 
         resp = relativePath(itemPath, rootFolder) ;
+        resp += "|" + artifactName;
+        resp += "|" + isApiService;
+        resp += "|" + isTest;
+        resp += "|" + getStats(!compactMode);
 
-        if (hastStats()) {
-            resp += "|" + artifactName;
-            resp += "|" + isApiService;
-            resp += "|" + isTest;
-            resp += "|" + getStats(!compactMode);
-
-            if (!compactMode) {
-                resp += "|" + numSubfolders;
-                resp += "|" + numFiles;
-            }
+        if (!compactMode) {
+            resp += "|" + numSubfolders;
+            resp += "|" + numFiles;
         }
 
         return resp ;
