@@ -11,7 +11,7 @@ public class ReportOptions {
         ReportOptions options = new ReportOptions();
 
         /*
-        LangByFolder <path> <options>
+        LangByFolder <path> <options> <outFile.csv>
             <options>:
                 -a: show all files
                 -f: show only folders
@@ -22,8 +22,8 @@ public class ReportOptions {
         options.rootFolder = "C:\\DATOS\\repos\\ApParquearApi" ;
         options.showFolderStats = true ;
         options.showHiddenItems = false ;
-        options.showUnknownExtensions = true ;
-        options.reportDetailLevel = ReportDetailLevel.ALL_ITEMS ;
+        options.showUnknownExtensions = false ;
+        options.reportDetailLevel = ReportDetailLevel.CUSTOM ;
 
         return options ;
     }
