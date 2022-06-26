@@ -1,23 +1,21 @@
 package org.mauriciogracia;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 
 public class Main {
+    //@todo: receive the path by parameter
     private static String rootFolder = "/home/c-mgracia/press/main";
     private static ArrayList<LanguageExtensions> languages  ;
     private static ArrayList<ItemLanguage> items = new ArrayList<>();
     private static ArrayList<String> excludeFolders = new ArrayList<>();
     private static ArrayList<String> artifacts = new ArrayList<>();
 
-    private static boolean showFiles = true ;
+    //@todo: receive this options by parameters of the command line
+    private static boolean showFiles = false ;
     private static boolean compactMode = false ;
-    private static boolean uniqueArtifacts = false ;
+    private static boolean uniqueArtifacts = true ;
     private static boolean showHiddenItems = false ;
 
     private static void InitLanguageExtensions() {
@@ -34,6 +32,9 @@ public class Main {
 
         String []jsExt = {".js"} ;
         languages.add(new LanguageExtensions("Javascript",jsExt)) ;
+
+        String []dataExt = {".json",".xml"} ;
+        languages.add(new LanguageExtensions("Data(json,xml)",dataExt)) ;
 
         String []pythonExt = {".py"} ;
         languages.add(new LanguageExtensions("Python",pythonExt)) ;
@@ -91,9 +92,11 @@ public class Main {
                                 itemLanguage.addLanguageFileCount(whichLanguage);
                             }
 
+                            newIL = new ItemLanguage(itemPathStr);
+                            newIL.addLanguageFileCount(whichLanguage);
+                            itemLanguage.mergeStats(newIL);
+
                             if (showFiles) {
-                                newIL = new ItemLanguage(itemPathStr);
-                                newIL.addLanguageFileCount(whichLanguage);
                                 items.add(newIL);
                             }
                         }
@@ -114,14 +117,14 @@ public class Main {
             subDirPath = itemLanguage.itemPath + "/" + itemName ;
             artifactName = ItemLanguage.determineArtifact(subDirPath) ;
 
+            ItemLanguage dlSub = new ItemLanguage(subDirPath);
+            itemLanguage.numSubfolders++;
+            IterateFolder(dlSub);
+            itemLanguage.mergeStats(dlSub);
+
             if(!uniqueArtifacts || (!artifacts.contains(artifactName))) {
                 artifacts.add(artifactName);
-
-                ItemLanguage dlSub = new ItemLanguage(subDirPath);
                 items.add(dlSub);
-                itemLanguage.numSubfolders++;
-                IterateFolder(dlSub);
-                itemLanguage.mergeStats(dlSub);
             }
         }
     }
@@ -136,7 +139,12 @@ public class Main {
     }
 
     private static void showResults() {
-        String header = "Folder|Artifact|isApiService|isTest|Languages" ;
+        String header = "";
+
+        if(!uniqueArtifacts) {
+            header += "Folder|";
+        }
+        header += "Artifact|isApiService|isTest|Languages" ;
 
         if(!compactMode) {
             header += "|# Subfolders|# Total Files" ;
@@ -145,7 +153,7 @@ public class Main {
         System.out.println(header) ;
 
         for (ItemLanguage item : items) {
-            System.out.println(item.toString(compactMode, rootFolder));
+            System.out.println(item.toString(rootFolder, compactMode,uniqueArtifacts));
         }
     }
 

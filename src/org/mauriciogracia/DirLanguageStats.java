@@ -1,6 +1,6 @@
 package org.mauriciogracia;
 
-public class DirLanguageStats {
+public class DirLanguageStats implements Comparable<DirLanguageStats>{
     public String languageName;
     public int numFiles;
 
@@ -18,5 +18,10 @@ public class DirLanguageStats {
         }
 
         return isEqual ;
+    }
+
+    @Override
+    public int compareTo(DirLanguageStats other) {
+        return languageName.compareTo(other.languageName) ;
     }
 }

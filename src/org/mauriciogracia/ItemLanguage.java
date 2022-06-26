@@ -1,6 +1,7 @@
 package org.mauriciogracia;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class ItemLanguage implements Comparable<ItemLanguage>{
     public String itemPath ;
@@ -8,6 +9,7 @@ public class ItemLanguage implements Comparable<ItemLanguage>{
     public int numSubfolders;
     public int numFiles ;
     public boolean isApiService ;
+    //@todo change this to 'numTestFiles' and count dirs that contain the word 'test' and also caunt .spec.ts and similar files
     public boolean isTest ;
     private ArrayList<DirLanguageStats> langStats ;
     static int prefixLength ;
@@ -30,8 +32,12 @@ public class ItemLanguage implements Comparable<ItemLanguage>{
         pos = aux.indexOf('/', 1);
 
         //The name of the first level folder is used as the base/component/artifact name
-        if (pos > 0) {
+        if (pos >= 0) {
             aux = aux.substring(1,pos) ;
+        }
+
+        if(aux.startsWith("/")) {
+            aux = aux.substring(1) ;
         }
         return aux ;
     }
@@ -67,14 +73,17 @@ public class ItemLanguage implements Comparable<ItemLanguage>{
         int max ;
 
         max = langStats.size() ;
+        Collections.sort(langStats);
 
         for(i = 0; i < max; i++) {
             dls = langStats.get(i) ;
+
             langStatsStr.append(dls.languageName);
 
             if(withNumFiles) {
-                langStatsStr.append(":").append(dls.numFiles);
+                langStatsStr.append("|").append(dls.numFiles);
             }
+
             if(i +1 != max) {
                 langStatsStr.append("|");
             }
@@ -105,11 +114,17 @@ public class ItemLanguage implements Comparable<ItemLanguage>{
         return folder.substring(rootFolder.length()) ;
     }
 
-    public String toString(boolean compactMode, String rootFolder) {
+    public String toString(String rootFolder, boolean compactMode, boolean onlyArtifacts) {
         String resp ;
 
-        resp = relativePath(itemPath, rootFolder) ;
-        resp += "|" + artifactName;
+        if(!onlyArtifacts) {
+            resp = relativePath(itemPath, rootFolder);
+            resp += "|" + artifactName;
+        }
+        else {
+            resp = artifactName ;
+        }
+
         resp += "|" + isApiService;
         resp += "|" + isTest;
         resp += "|" + getStats(!compactMode);
