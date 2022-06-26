@@ -8,9 +8,8 @@ public class ItemLanguage implements Comparable<ItemLanguage>{
     public String artifactName;
     public int numSubfolders;
     public int numFiles ;
+    public int numTestFiles ;
     public boolean isApiService ;
-    //@todo change this to 'numTestFiles' and count dirs that contain the word 'test' and also caunt .spec.ts and similar files
-    public boolean isTest ;
     private ArrayList<DirLanguageStats> langStats ;
     static int prefixLength ;
 
@@ -18,7 +17,7 @@ public class ItemLanguage implements Comparable<ItemLanguage>{
         this.itemPath = itemPath ;
         artifactName = determineArtifact(itemPath) ;
         isApiService = itemPath.contains("-service") ;
-        isTest = itemPath.contains("test") ;
+        numTestFiles = 0 ;
         numSubfolders = 0 ;
         numFiles = 0 ;
         langStats = new ArrayList<>() ;
@@ -62,9 +61,6 @@ public class ItemLanguage implements Comparable<ItemLanguage>{
             langStats.add(dls) ;
         }
     }
-    public boolean hastStats() {
-        return ! langStats.isEmpty() ;
-    }
 
     public String getStats(boolean withNumFiles) {
         StringBuilder langStatsStr = new StringBuilder();
@@ -92,12 +88,13 @@ public class ItemLanguage implements Comparable<ItemLanguage>{
         return langStatsStr.toString();
     }
 
-    public void mergeStats(ItemLanguage subFolder) {
+    public void mergeStats(ItemLanguage subItem) {
         int pos ;
-        this.numFiles += subFolder.numFiles ;
-        this.numSubfolders += subFolder.numSubfolders ;
+        this.numFiles += subItem.numFiles ;
+        this.numSubfolders += subItem.numSubfolders ;
+        this.numTestFiles += subItem.numTestFiles ;
 
-        for(DirLanguageStats dls : subFolder.langStats) {
+        for(DirLanguageStats dls : subItem.langStats) {
             pos = langStats.indexOf(dls) ;
 
             if(pos >= 0)
@@ -126,7 +123,7 @@ public class ItemLanguage implements Comparable<ItemLanguage>{
         }
 
         resp += "|" + isApiService;
-        resp += "|" + isTest;
+        resp += "|numTestFiles:" + numTestFiles;
 
         if (!compactMode) {
             resp += "|" + numSubfolders;
@@ -136,6 +133,23 @@ public class ItemLanguage implements Comparable<ItemLanguage>{
         resp += "|" + getStats(!compactMode);
 
         return resp ;
+    }
+
+    public static String getHeader(boolean compactMode, boolean uniqueArtifacts) {
+        String header = "";
+
+        if(!uniqueArtifacts) {
+            header += "Folder|";
+        }
+        header += "Artifact|isApiService|numTestFiles" ;
+
+        if(!compactMode) {
+            header += "|# Subfolders|# Total Files" ;
+        }
+
+        header += "|Languages" ;
+
+        return header ;
     }
 
     @Override

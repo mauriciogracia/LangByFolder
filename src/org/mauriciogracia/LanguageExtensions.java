@@ -15,13 +15,18 @@ public class LanguageExtensions {
         extensions = ext ;
     }
 
-    public boolean fileMatches(String fileExtension) {
+    public boolean nameMatches(String itemName) {
         boolean isMatch ;
+        int i ;
+        isMatch = false ;
 
-        isMatch = Arrays.asList(extensions).contains(fileExtension.toLowerCase()) ;
-        if(isMatch) {
-            numFiles++ ;
+        i = 0 ;
+
+        while(!isMatch && (i < extensions.length)) {
+            isMatch = itemName.toLowerCase().endsWith(extensions[i]) ;
+            i++ ;
         }
+
         return isMatch ;
     }
 }

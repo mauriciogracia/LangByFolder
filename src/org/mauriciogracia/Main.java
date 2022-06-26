@@ -13,11 +13,13 @@ public class Main {
     private static ArrayList<String> artifacts = new ArrayList<>();
 
     //@todo: receive this options by parameters of the command line
-    private static boolean showFiles = false ;
     private static boolean compactMode = false ;
-    private static boolean uniqueArtifacts = true ;
+    private static boolean uniqueArtifacts = false ; //false shows each file
     private static boolean showHiddenItems = false ;
     private static boolean showUnknownExtensions = false ;
+
+    private static String[] testExt = {"spec.ts","spec.py","spec.scala"} ;
+    private static LanguageExtensions testLangExt = new LanguageExtensions("TestFiles",testExt) ;
 
     private static void InitLanguageExtensions() {
         languages = new ArrayList<>() ;
@@ -64,28 +66,26 @@ public class Main {
 
     private  static String determineFileLanguage(String fileName) {
         String langName = "unknown" ;
+        int i = 0 ;
+        boolean match ;
 
-        int pos = fileName.lastIndexOf('.') ;
+        do {
+            LanguageExtensions lang =languages.get(i) ;
+            match = lang.nameMatches(fileName) ;
 
-        if(pos >= 0) {
-            String ext = fileName.substring(pos) ;
-            int i = 0 ;
-            boolean match ;
-
-            do {
-                LanguageExtensions lang =languages.get(i) ;
-                match = lang.fileMatches(ext) ;
-
-                if(match)
-                {
-                    langName = lang.languageName ;
-                }
-                i++  ;
-            } while (!match && (i < languages.size())) ;
-
-            if(showUnknownExtensions && langName.equals("unknown")) {
-                langName += "(" + ext + ")" ;
+            if(match)
+            {
+                langName = lang.languageName ;
             }
+            i++  ;
+        } while (!match && (i < languages.size())) ;
+
+        if(showUnknownExtensions && langName.equals("unknown")) {
+            String ext ;
+            int pos = fileName.lastIndexOf('.') ;
+
+            ext = (pos >= 0) ? fileName.substring(pos) : fileName ;
+            langName += "(" + ext + ")" ;
         }
 
         return langName ;
@@ -118,7 +118,13 @@ public class Main {
                             newIL = new ItemLanguage(itemPathStr);
                             newIL.addLanguageFileCount(whichLanguage);
 
-                            if (showFiles) {
+                            if(testLangExt.nameMatches(itemName))
+                            {
+                                newIL.numTestFiles += 1 ;
+                                itemLanguage.numTestFiles += 1 ;
+                            }
+
+                            if (!uniqueArtifacts) {
                                 items.add(newIL);
                             }
                         }
@@ -162,20 +168,7 @@ public class Main {
     }
 
     private static void showResults() {
-        String header = "";
-
-        if(!uniqueArtifacts) {
-            header += "Folder|";
-        }
-        header += "Artifact|isApiService|isTest" ;
-
-        if(!compactMode) {
-            header += "|# Subfolders|# Total Files" ;
-        }
-
-        header += "|Languages" ;
-
-        System.out.println(header) ;
+        System.out.println(ItemLanguage.getHeader(compactMode, uniqueArtifacts)) ;
 
         for (ItemLanguage item : items) {
             System.out.println(item.toString(rootFolder, compactMode,uniqueArtifacts));
