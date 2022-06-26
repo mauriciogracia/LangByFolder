@@ -17,6 +17,7 @@ public class Main {
     private static boolean compactMode = false ;
     private static boolean uniqueArtifacts = true ;
     private static boolean showHiddenItems = false ;
+    private static boolean showUnknownExtensions = false ;
 
     private static void InitLanguageExtensions() {
         languages = new ArrayList<>() ;
@@ -27,20 +28,38 @@ public class Main {
         String []scalaExt = {".scala"} ;
         languages.add(new LanguageExtensions("Scala",scalaExt)) ;
 
-        String []javaExt = {".java"} ;
+        String []javaExt = {".java",".jar","war"} ;
         languages.add(new LanguageExtensions("Java",javaExt)) ;
 
         String []jsExt = {".js"} ;
         languages.add(new LanguageExtensions("Javascript",jsExt)) ;
 
-        String []dataExt = {".json",".xml"} ;
-        languages.add(new LanguageExtensions("Data(json,xml)",dataExt)) ;
+        String []rubyExt = {".rb"} ;
+        languages.add(new LanguageExtensions("Ruby",rubyExt)) ;
+
+        String []databaseExt = {".sql"} ;
+        languages.add(new LanguageExtensions("Database(sql)",databaseExt)) ;
 
         String []pythonExt = {".py"} ;
         languages.add(new LanguageExtensions("Python",pythonExt)) ;
 
-        String []bazelExt = {".bazel"} ;
+        String []htmlExt = {".html",".htm"} ;
+        languages.add(new LanguageExtensions("HTML",htmlExt)) ;
+
+        String []docExt = {".md",".txt"} ;
+        languages.add(new LanguageExtensions("Doc(md,txt)",docExt)) ;
+
+        String []dataExt = {".json",".xml"} ;
+        languages.add(new LanguageExtensions("Data(json,xml)",dataExt)) ;
+
+        String []bazelExt = {".bazel",".bzl"} ;
         languages.add(new LanguageExtensions("Bazel",bazelExt)) ;
+
+        String []shellExt = {".bash",".sh"} ;
+        languages.add(new LanguageExtensions("Shell",shellExt)) ;
+
+        String []imageExt = {".png",".svg",".jpg",".jpeg"} ;
+        languages.add(new LanguageExtensions("Image",imageExt)) ;
     }
 
     private  static String determineFileLanguage(String fileName) {
@@ -63,6 +82,10 @@ public class Main {
                 }
                 i++  ;
             } while (!match && (i < languages.size())) ;
+
+            if(showUnknownExtensions && langName.equals("unknown")) {
+                langName += "(" + ext + ")" ;
+            }
         }
 
         return langName ;
@@ -94,7 +117,6 @@ public class Main {
 
                             newIL = new ItemLanguage(itemPathStr);
                             newIL.addLanguageFileCount(whichLanguage);
-                            itemLanguage.mergeStats(newIL);
 
                             if (showFiles) {
                                 items.add(newIL);
@@ -118,14 +140,15 @@ public class Main {
             artifactName = ItemLanguage.determineArtifact(subDirPath) ;
 
             ItemLanguage dlSub = new ItemLanguage(subDirPath);
-            itemLanguage.numSubfolders++;
-            IterateFolder(dlSub);
-            itemLanguage.mergeStats(dlSub);
 
             if(!uniqueArtifacts || (!artifacts.contains(artifactName))) {
                 artifacts.add(artifactName);
                 items.add(dlSub);
             }
+
+            itemLanguage.numSubfolders++;
+            IterateFolder(dlSub);
+            itemLanguage.mergeStats(dlSub);
         }
     }
 
@@ -144,11 +167,13 @@ public class Main {
         if(!uniqueArtifacts) {
             header += "Folder|";
         }
-        header += "Artifact|isApiService|isTest|Languages" ;
+        header += "Artifact|isApiService|isTest" ;
 
         if(!compactMode) {
             header += "|# Subfolders|# Total Files" ;
         }
+
+        header += "|Languages" ;
 
         System.out.println(header) ;
 

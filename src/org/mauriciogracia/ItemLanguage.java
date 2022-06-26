@@ -127,12 +127,13 @@ public class ItemLanguage implements Comparable<ItemLanguage>{
 
         resp += "|" + isApiService;
         resp += "|" + isTest;
-        resp += "|" + getStats(!compactMode);
 
         if (!compactMode) {
             resp += "|" + numSubfolders;
             resp += "|" + numFiles;
         }
+
+        resp += "|" + getStats(!compactMode);
 
         return resp ;
     }
