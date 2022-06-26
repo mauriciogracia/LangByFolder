@@ -11,12 +11,12 @@ public class DirLanguageStats {
 
     @Override
     public boolean equals(Object other) {
-        boolean isEqueal = false ;
+        boolean isEqual = false ;
 
-        if(other != null) {
-            isEqueal = this.languageName.equals(((DirLanguageStats)other).languageName) ;
+        if (other instanceof  DirLanguageStats) {
+            isEqual = this.languageName.equals(((DirLanguageStats)other).languageName) ;
         }
 
-        return isEqueal ;
+        return isEqual ;
     }
 }
