@@ -4,23 +4,31 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class Main {
-    //@todo: receive the path by parameter
-    private static String rootFolder = "/home/c-mgracia/press/main";
+public class LangByFolder {
     private static ArrayList<LanguageExtensions> languages  ;
     private static ArrayList<ItemLanguage> items = new ArrayList<>();
     private static ArrayList<String> excludeFolders = new ArrayList<>();
     private static ArrayList<String> artifacts = new ArrayList<>();
-
-    //@todo: receive this options by parameters of the command line
-    private static boolean compactMode = false ;
-    private static boolean uniqueArtifacts = false ; //false shows each file
-    private static boolean showHiddenItems = false ;
-    private static boolean showUnknownExtensions = false ;
-
     private static String[] testExt = {"spec.ts","spec.py","spec.scala"} ;
     private static LanguageExtensions testLangExt = new LanguageExtensions("TestFiles",testExt) ;
 
+    //@todo: receive the path by parameter
+    private static ReportOptions reportOptions ;
+
+    public static void main(String[] args) {
+        reportOptions = ReportOptions.processArguments(args);
+        InitLanguageExtensions();
+        InitFoldersToExclude();
+
+        //Iterate the specified folder
+        ItemLanguage.prefixLength = reportOptions.rootFolder.length();
+        ItemLanguage dl = new ItemLanguage(reportOptions.rootFolder);
+        IterateFolder(dl);
+
+        Collections.sort(items);
+
+        showResults() ;
+    }
     private static void InitLanguageExtensions() {
         languages = new ArrayList<>() ;
 
@@ -80,7 +88,7 @@ public class Main {
             i++  ;
         } while (!match && (i < languages.size())) ;
 
-        if(showUnknownExtensions && langName.equals("unknown")) {
+        if(reportOptions.showUnknownExtensions && langName.equals("unknown")) {
             String ext ;
             int pos = fileName.lastIndexOf('.') ;
 
@@ -104,7 +112,7 @@ public class Main {
                     itemName = folderItem.getName();
                     itemPathStr = itemLanguage.itemPath + "/" + itemName ;
 
-                    if ((showHiddenItems || !folderItem.isHidden()) && !itemName.startsWith("/.")) {
+                    if ((reportOptions.showHiddenItems || !folderItem.isHidden()) && !itemName.startsWith("/.")) {
                         if (folderItem.isDirectory()) {
                             processFolder(itemLanguage, itemName);
                         } else if (folderItem.isFile()) {
@@ -124,7 +132,7 @@ public class Main {
                                 itemLanguage.numTestFiles += 1 ;
                             }
 
-                            if (!uniqueArtifacts) {
+                            if (reportOptions.reportDetailLevel == ReportDetailLevel.ALL_ITEMS) {
                                 items.add(newIL);
                             }
                         }
@@ -147,7 +155,7 @@ public class Main {
 
             ItemLanguage dlSub = new ItemLanguage(subDirPath);
 
-            if(!uniqueArtifacts || (!artifacts.contains(artifactName))) {
+            if((reportOptions.reportDetailLevel != ReportDetailLevel.CUSTOM) || (!artifacts.contains(artifactName))) {
                 artifacts.add(artifactName);
                 items.add(dlSub);
             }
@@ -168,24 +176,14 @@ public class Main {
     }
 
     private static void showResults() {
-        System.out.println(ItemLanguage.getHeader(compactMode, uniqueArtifacts)) ;
+        System.out.println(ItemLanguage.getHeader(reportOptions)) ;
 
         for (ItemLanguage item : items) {
-            System.out.println(item.toString(rootFolder, compactMode,uniqueArtifacts));
+            System.out.println(item.toString(reportOptions));
         }
     }
 
-    public static void main(String[] args) {
-        InitLanguageExtensions();
-        InitFoldersToExclude();
 
-        //Iterate the specified folder
-        ItemLanguage.prefixLength = rootFolder.length();
-        ItemLanguage dl = new ItemLanguage(rootFolder);
-        IterateFolder(dl);
 
-        Collections.sort(items);
 
-        showResults() ;
-    }
 }

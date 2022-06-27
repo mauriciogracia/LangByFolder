@@ -111,11 +111,11 @@ public class ItemLanguage implements Comparable<ItemLanguage>{
         return folder.substring(rootFolder.length()) ;
     }
 
-    public String toString(String rootFolder, boolean compactMode, boolean onlyArtifacts) {
+    public String toString(ReportOptions reportOptions) {
         String resp ;
 
-        if(!onlyArtifacts) {
-            resp = relativePath(itemPath, rootFolder);
+        if(reportOptions.reportDetailLevel != ReportDetailLevel.CUSTOM) {
+            resp = relativePath(itemPath, reportOptions.rootFolder);
             resp += "|" + artifactName;
         }
         else {
@@ -125,25 +125,25 @@ public class ItemLanguage implements Comparable<ItemLanguage>{
         resp += "|" + isApiService;
         resp += "|numTestFiles:" + numTestFiles;
 
-        if (!compactMode) {
+        if (reportOptions.showFolderStats) {
             resp += "|" + numSubfolders;
             resp += "|" + numFiles;
         }
 
-        resp += "|" + getStats(!compactMode);
+        resp += "|" + getStats(reportOptions.showFolderStats);
 
         return resp ;
     }
 
-    public static String getHeader(boolean compactMode, boolean uniqueArtifacts) {
+    public static String getHeader(ReportOptions reportOptions) {
         String header = "";
 
-        if(!uniqueArtifacts) {
+        if(reportOptions.reportDetailLevel != ReportDetailLevel.CUSTOM) {
             header += "Folder|";
         }
         header += "Artifact|isApiService|numTestFiles" ;
 
-        if(!compactMode) {
+        if(!reportOptions.showFolderStats) {
             header += "|# Subfolders|# Total Files" ;
         }
 
