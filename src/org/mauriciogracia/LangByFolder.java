@@ -4,30 +4,37 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import static org.mauriciogracia.ReportOptions.usageOptions;
+
 public class LangByFolder {
     private static ArrayList<LanguageExtensions> languages  ;
-    private static ArrayList<ItemLanguage> items = new ArrayList<>();
-    private static ArrayList<String> excludeFolders = new ArrayList<>();
-    private static ArrayList<String> artifacts = new ArrayList<>();
-    private static String[] testExt = {"spec.ts","spec.py","spec.scala"} ;
-    private static LanguageExtensions testLangExt = new LanguageExtensions("TestFiles",testExt) ;
+    private final static ArrayList<ItemLanguage> items = new ArrayList<>();
+    private final static ArrayList<String> excludeFolders = new ArrayList<>();
+    private final static ArrayList<String> artifacts = new ArrayList<>();
+    private final static String[] testExt = {"spec.ts","spec.py","spec.scala"} ;
+    private final static LanguageExtensions testLangExt = new LanguageExtensions("TestFiles",testExt) ;
 
-    //@todo: receive the path by parameter
     private static ReportOptions reportOptions ;
 
     public static void main(String[] args) {
         reportOptions = ReportOptions.processArguments(args);
-        InitLanguageExtensions();
-        InitFoldersToExclude();
 
-        //Iterate the specified folder
-        ItemLanguage.prefixLength = reportOptions.rootFolder.length();
-        ItemLanguage dl = new ItemLanguage(reportOptions.rootFolder);
-        IterateFolder(dl);
+        if(!reportOptions.validArguments) {
+            System.out.println(usageOptions);
+        }
+        else {
+            InitLanguageExtensions();
+            InitFoldersToExclude();
 
-        Collections.sort(items);
+            //Iterate the specified folder
+            ItemLanguage.prefixLength = reportOptions.rootFolder.length();
+            ItemLanguage dl = new ItemLanguage(reportOptions.rootFolder);
+            IterateFolder(dl);
 
-        showResults() ;
+            Collections.sort(items);
+
+            showResults();
+        }
     }
     private static void InitLanguageExtensions() {
         languages = new ArrayList<>() ;
