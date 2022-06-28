@@ -1,4 +1,4 @@
-package org.mauriciogracia;
+package org.mgg;
 
 public enum ReportDetailLevel {
     CUSTOM, //Try to determine and show only software artifacts

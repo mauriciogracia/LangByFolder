@@ -1,4 +1,4 @@
-package org.mauriciogracia;
+package org.mgg;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,7 +10,7 @@ public class ItemLanguage implements Comparable<ItemLanguage>{
     public int numFiles ;
     public int numTestFiles ;
     public boolean isApiService ;
-    private ArrayList<DirLanguageStats> langStats ;
+    private final ArrayList<DirLanguageStats> langStats ;
     static int prefixLength ;
 
     public ItemLanguage(String itemPath) {
@@ -62,7 +62,7 @@ public class ItemLanguage implements Comparable<ItemLanguage>{
         }
     }
 
-    public String getStats(boolean withNumFiles) {
+    public String getStats() {
         StringBuilder langStatsStr = new StringBuilder();
         DirLanguageStats dls ;
         int i ;
@@ -75,10 +75,7 @@ public class ItemLanguage implements Comparable<ItemLanguage>{
             dls = langStats.get(i) ;
 
             langStatsStr.append(dls.languageName);
-
-            if(withNumFiles) {
-                langStatsStr.append("|").append(dls.numFiles);
-            }
+            langStatsStr.append("|").append(dls.numFiles);
 
             if(i +1 != max) {
                 langStatsStr.append("|");
@@ -124,13 +121,11 @@ public class ItemLanguage implements Comparable<ItemLanguage>{
 
         resp += "|" + isApiService;
         resp += "|numTestFiles:" + numTestFiles;
+        resp += "|" + numSubfolders;
+        resp += "|" + numFiles;
 
-        if (reportOptions.showFolderStats) {
-            resp += "|" + numSubfolders;
-            resp += "|" + numFiles;
-        }
 
-        resp += "|" + getStats(reportOptions.showFolderStats);
+        resp += "|" + getStats();
 
         return resp ;
     }
@@ -141,13 +136,7 @@ public class ItemLanguage implements Comparable<ItemLanguage>{
         if(reportOptions.reportDetailLevel != ReportDetailLevel.CUSTOM) {
             header += "Folder|";
         }
-        header += "Artifact|isApiService|numTestFiles" ;
-
-        if(!reportOptions.showFolderStats) {
-            header += "|# Subfolders|# Total Files" ;
-        }
-
-        header += "|Languages" ;
+        header += "Artifact|isApiService|numTestFiles|# Subfolders|# Total Files|Languages" ;
 
         return header ;
     }

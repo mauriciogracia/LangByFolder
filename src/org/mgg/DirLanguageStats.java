@@ -1,4 +1,4 @@
-package org.mauriciogracia;
+package org.mgg;
 
 public class DirLanguageStats implements Comparable<DirLanguageStats>{
     public String languageName;

@@ -1,4 +1,4 @@
-package org.mauriciogracia;
+package org.mgg;
 
 public class LanguageExtensions {
     public String languageName ;
@@ -12,7 +12,7 @@ public class LanguageExtensions {
         extensions = ext ;
     }
 
-    public boolean extensionMatches(String itemName) {
+    public boolean isExtensionMatchedBy(String itemName) {
         boolean isMatch ;
         int i ;
         isMatch = false ;
@@ -27,7 +27,7 @@ public class LanguageExtensions {
         return isMatch ;
     }
 
-    public boolean nameContains(String itemName) {
+    public boolean isContainedBy(String itemName) {
         boolean isMatch ;
         int i ;
         isMatch = false ;

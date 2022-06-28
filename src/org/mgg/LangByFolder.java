@@ -1,10 +1,10 @@
-package org.mauriciogracia;
+package org.mgg;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import static org.mauriciogracia.ReportOptions.usageOptions;
+import static org.mgg.ReportOptions.usageOptions;
 
 public class LangByFolder {
     private static ArrayList<LanguageExtensions> languages  ;
@@ -13,30 +13,40 @@ public class LangByFolder {
     private final static ArrayList<String> artifacts = new ArrayList<>();
     private final static String[] testExt = {"spec.ts","spec.py","spec.scala","test"} ;
     private final static LanguageExtensions testLang = new LanguageExtensions("TestFiles",testExt) ;
-
-    private static ReportOptions reportOptions ;
-
     public static void main(String[] args) {
+        ReportOptions reportOptions ;
+
         reportOptions = ReportOptions.processArguments(args);
 
         if(!reportOptions.validArguments) {
             System.out.println(usageOptions);
         }
         else {
-            InitLanguageExtensions();
-            InitFoldersToExclude();
-
-            //Iterate the specified folder
-            ItemLanguage.prefixLength = reportOptions.rootFolder.length();
-            ItemLanguage dl = new ItemLanguage(reportOptions.rootFolder);
-            IterateFolder(dl);
-
-            Collections.sort(items);
-
-            showResults();
+            processRootFolder(reportOptions) ;
         }
     }
-    private static void InitLanguageExtensions() {
+    public static void processRootFolder(ReportOptions reportOptions) {
+        initLanguageExtensions();
+        initFoldersToExclude();
+
+        //Iterate the specified folder
+        ItemLanguage.prefixLength = reportOptions.rootFolder.length();
+        ItemLanguage dl = new ItemLanguage(reportOptions.rootFolder);
+        iterateFolder(dl, reportOptions);
+
+        Collections.sort(items);
+
+        showResults(reportOptions);
+    }
+
+    private static void showResults(ReportOptions reportOptions) {
+        reportOptions.output.println(ItemLanguage.getHeader(reportOptions));
+
+        for (ItemLanguage item : items) {
+            reportOptions.output.println(item.toString(reportOptions));
+        }
+    }
+    private static void initLanguageExtensions() {
         languages = new ArrayList<>() ;
 
         String []tsExt = {".ts"} ;
@@ -91,14 +101,14 @@ public class LangByFolder {
         languages.add(new LanguageExtensions("Image",imageExt)) ;
     }
 
-    private  static String determineFileLanguage(String fileName) {
+    private  static String determineFileLanguage(String fileName, ReportOptions reportOptions) {
         String langName = "unknown" ;
         int i = 0 ;
         boolean match ;
 
         do {
             LanguageExtensions lang =languages.get(i) ;
-            match = lang.extensionMatches(fileName) ;
+            match = lang.isExtensionMatchedBy(fileName) ;
 
             if(match)
             {
@@ -118,7 +128,7 @@ public class LangByFolder {
         return langName ;
     }
 
-    private static void IterateFolder(ItemLanguage currentFolder)  {
+    private static void iterateFolder(ItemLanguage currentFolder, ReportOptions reportOptions)  {
         try {
             File folder = new File(currentFolder.itemPath);
             File[] folderItems = folder.listFiles();
@@ -135,9 +145,9 @@ public class LangByFolder {
 
                     if ((reportOptions.showHiddenItems || !folderItem.isHidden()) && !itemName.startsWith("/.")) {
                         if (folderItem.isDirectory()) {
-                            childIL = processFolder(currentFolder, itemName);
+                            childIL = processFolder(currentFolder, itemName, reportOptions);
                         } else if (folderItem.isFile()) {
-                            String whichLanguage = determineFileLanguage(itemName);
+                            String whichLanguage = determineFileLanguage(itemName, reportOptions);
                             currentFolder.numFiles++;
 
                             if (!whichLanguage.equals("unknown")) {
@@ -147,7 +157,7 @@ public class LangByFolder {
                             childIL = new ItemLanguage(childPathStr);
                             childIL.addLanguageFileCount(whichLanguage);
 
-                            if(testLang.extensionMatches(itemName) || testLang.nameContains(itemName))
+                            if(testLang.isExtensionMatchedBy(itemName) || testLang.isContainedBy(itemName))
                             {
                                 childIL.numTestFiles += 1 ;
                             }
@@ -158,7 +168,7 @@ public class LangByFolder {
 
                         }
 
-                        //merge stats from child items with current parent element (both folders/files)
+                        //merge stats from child items (both folders/files) with current parent element
                         if(childIL != null)
                         {
                             currentFolder.mergeStats(childIL);
@@ -172,7 +182,7 @@ public class LangByFolder {
         }
     }
 
-    private static ItemLanguage processFolder(ItemLanguage itemLanguage,String itemName) {
+    private static ItemLanguage processFolder(ItemLanguage itemLanguage,String itemName, ReportOptions reportOptions) {
         String artifactName ;
         String subDirPath ;
         ItemLanguage dlSub = null ;
@@ -189,13 +199,13 @@ public class LangByFolder {
 
             items.add(dlSub);
             itemLanguage.numSubfolders++;
-            IterateFolder(dlSub);
+            iterateFolder(dlSub, reportOptions);
         }
 
         return dlSub ;
     }
 
-    private static void InitFoldersToExclude()  {
+    private static void initFoldersToExclude()  {
         excludeFolders.add("node_modules") ;
         excludeFolders.add("bazel-bin") ;
         excludeFolders.add("bazel-main") ;
@@ -204,13 +214,7 @@ public class LangByFolder {
         excludeFolders.add("output") ;
     }
 
-    private static void showResults() {
-        System.out.println(ItemLanguage.getHeader(reportOptions)) ;
 
-        for (ItemLanguage item : items) {
-            System.out.println(item.toString(reportOptions));
-        }
-    }
 
 
 
