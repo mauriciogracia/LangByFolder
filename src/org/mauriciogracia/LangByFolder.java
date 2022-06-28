@@ -11,8 +11,8 @@ public class LangByFolder {
     private final static ArrayList<ItemLanguage> items = new ArrayList<>();
     private final static ArrayList<String> excludeFolders = new ArrayList<>();
     private final static ArrayList<String> artifacts = new ArrayList<>();
-    private final static String[] testExt = {"spec.ts","spec.py","spec.scala"} ;
-    private final static LanguageExtensions testLangExt = new LanguageExtensions("TestFiles",testExt) ;
+    private final static String[] testExt = {"spec.ts","spec.py","spec.scala","test"} ;
+    private final static LanguageExtensions testLang = new LanguageExtensions("TestFiles",testExt) ;
 
     private static ReportOptions reportOptions ;
 
@@ -51,6 +51,18 @@ public class LangByFolder {
         String []jsExt = {".js"} ;
         languages.add(new LanguageExtensions("Javascript",jsExt)) ;
 
+        String []cSharpExt = {".cs"} ;
+        languages.add(new LanguageExtensions("C#",cSharpExt)) ;
+
+        String []cPlusPlusExt = {".cpp"} ;
+        languages.add(new LanguageExtensions("C++",cPlusPlusExt)) ;
+
+        String []vsProjectSolution = {".csproj", ".sln"} ;
+        languages.add(new LanguageExtensions("vsProjectSolution",cSharpExt)) ;
+
+        String []winArtifact = {".dll", ".exe", ".pdb"} ;
+        languages.add(new LanguageExtensions("Windows artifact",winArtifact)) ;
+
         String []rubyExt = {".rb"} ;
         languages.add(new LanguageExtensions("Ruby",rubyExt)) ;
 
@@ -86,7 +98,7 @@ public class LangByFolder {
 
         do {
             LanguageExtensions lang =languages.get(i) ;
-            match = lang.nameMatches(fileName) ;
+            match = lang.extensionMatches(fileName) ;
 
             if(match)
             {
@@ -111,13 +123,13 @@ public class LangByFolder {
             File folder = new File(itemLanguage.itemPath);
             File[] folderItems = folder.listFiles();
             String itemName ;
-            String itemPathStr ;
-            ItemLanguage newIL ;
+            String childPathStr ;
+            ItemLanguage childIL ;
 
             if(folderItems != null) {
                 for (File folderItem : folderItems) {
                     itemName = folderItem.getName();
-                    itemPathStr = itemLanguage.itemPath + "/" + itemName ;
+                    childPathStr = itemLanguage.itemPath + "/" + itemName ;
 
                     if ((reportOptions.showHiddenItems || !folderItem.isHidden()) && !itemName.startsWith("/.")) {
                         if (folderItem.isDirectory()) {
@@ -130,18 +142,18 @@ public class LangByFolder {
                                 itemLanguage.addLanguageFileCount(whichLanguage);
                             }
 
-                            newIL = new ItemLanguage(itemPathStr);
-                            newIL.addLanguageFileCount(whichLanguage);
+                            childIL = new ItemLanguage(childPathStr);
+                            childIL.addLanguageFileCount(whichLanguage);
 
-                            if(testLangExt.nameMatches(itemName))
+                            if(testLang.extensionMatches(itemName) || testLang.nameContains(itemName))
                             {
-                                newIL.numTestFiles += 1 ;
-                                itemLanguage.numTestFiles += 1 ;
+                                childIL.numTestFiles += 1 ;
                             }
 
                             if (reportOptions.reportDetailLevel == ReportDetailLevel.ALL_ITEMS) {
-                                items.add(newIL);
+                                items.add(childIL);
                             }
+                            itemLanguage.mergeStats(childIL);
                         }
                     }
                 }

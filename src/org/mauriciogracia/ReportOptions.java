@@ -10,20 +10,21 @@ public class ReportOptions {
 
 
     public static String usageOptions =
-        "LangByFolder <path> <options> <outFile.csv>\n\t<options>:\n\t\t-a: show all files (default)\n\t\t-f: show only folders\n\t\t-c: custom artifact\n\t\t-h: show hidden files/folders\n\t\t-u: show unknown extensions (default)" ;
+        "\nLangByFolder <path> <options> <outFile.csv>\n\t<options>:\n\t\t-a: show all files (default)\n\t\t-f: show only folders\n\t\t-c: custom artifact\n\t\t-h: show hidden files/folders\n\t\t-u: show unknown extensions (default)" ;
     private void checkArguments(String[] args) {
         int numArgs ;
 
         validArguments = false ;
         numArgs = args.length ;
 
-        if((numArgs >= 2) && (numArgs <=  4))
+        if((numArgs >= 1) && (numArgs <=  3))
         {
-            rootFolder = args[1] ;
+            rootFolder = args[0] ;
 
-            if(numArgs == 2) {
+            if(numArgs == 1) {
                 setDefaultReportOptions() ;
             }
+            validArguments = true ;
         }
     }
 

@@ -1,8 +1,5 @@
 package org.mauriciogracia;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 public class LanguageExtensions {
     public String languageName ;
     public String []extensions;
@@ -15,7 +12,7 @@ public class LanguageExtensions {
         extensions = ext ;
     }
 
-    public boolean nameMatches(String itemName) {
+    public boolean extensionMatches(String itemName) {
         boolean isMatch ;
         int i ;
         isMatch = false ;
@@ -24,6 +21,21 @@ public class LanguageExtensions {
 
         while(!isMatch && (i < extensions.length)) {
             isMatch = itemName.toLowerCase().endsWith(extensions[i]) ;
+            i++ ;
+        }
+
+        return isMatch ;
+    }
+
+    public boolean nameContains(String itemName) {
+        boolean isMatch ;
+        int i ;
+        isMatch = false ;
+
+        i = 0 ;
+
+        while(!isMatch && (i < extensions.length)) {
+            isMatch = itemName.toLowerCase().contains(extensions[i]) ;
             i++ ;
         }
 
