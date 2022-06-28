@@ -118,9 +118,9 @@ public class LangByFolder {
         return langName ;
     }
 
-    private static void IterateFolder(ItemLanguage itemLanguage)  {
+    private static void IterateFolder(ItemLanguage currentFolder)  {
         try {
-            File folder = new File(itemLanguage.itemPath);
+            File folder = new File(currentFolder.itemPath);
             File[] folderItems = folder.listFiles();
             String itemName ;
             String childPathStr ;
@@ -129,17 +129,19 @@ public class LangByFolder {
             if(folderItems != null) {
                 for (File folderItem : folderItems) {
                     itemName = folderItem.getName();
-                    childPathStr = itemLanguage.itemPath + "/" + itemName ;
+                    childPathStr = currentFolder.itemPath + "/" + itemName ;
+
+                    childIL = null ;
 
                     if ((reportOptions.showHiddenItems || !folderItem.isHidden()) && !itemName.startsWith("/.")) {
                         if (folderItem.isDirectory()) {
-                            processFolder(itemLanguage, itemName);
+                            childIL = processFolder(currentFolder, itemName);
                         } else if (folderItem.isFile()) {
                             String whichLanguage = determineFileLanguage(itemName);
-                            itemLanguage.numFiles++;
+                            currentFolder.numFiles++;
 
                             if (!whichLanguage.equals("unknown")) {
-                                itemLanguage.addLanguageFileCount(whichLanguage);
+                                currentFolder.addLanguageFileCount(whichLanguage);
                             }
 
                             childIL = new ItemLanguage(childPathStr);
@@ -153,7 +155,13 @@ public class LangByFolder {
                             if (reportOptions.reportDetailLevel == ReportDetailLevel.ALL_ITEMS) {
                                 items.add(childIL);
                             }
-                            itemLanguage.mergeStats(childIL);
+
+                        }
+
+                        //merge stats from child items with current parent element (both folders/files)
+                        if(childIL != null)
+                        {
+                            currentFolder.mergeStats(childIL);
                         }
                     }
                 }
@@ -164,15 +172,16 @@ public class LangByFolder {
         }
     }
 
-    private static void processFolder(ItemLanguage itemLanguage,String itemName) {
+    private static ItemLanguage processFolder(ItemLanguage itemLanguage,String itemName) {
         String artifactName ;
         String subDirPath ;
+        ItemLanguage dlSub = null ;
 
         if(!excludeFolders.contains(itemName)) {
             subDirPath = itemLanguage.itemPath + "/" + itemName ;
             artifactName = ItemLanguage.determineArtifact(subDirPath) ;
 
-            ItemLanguage dlSub = new ItemLanguage(subDirPath);
+            dlSub = new ItemLanguage(subDirPath);
 
             if((reportOptions.reportDetailLevel == ReportDetailLevel.CUSTOM) && !artifacts.contains(artifactName)) {
                 artifacts.add(artifactName);
@@ -181,8 +190,9 @@ public class LangByFolder {
             items.add(dlSub);
             itemLanguage.numSubfolders++;
             IterateFolder(dlSub);
-            itemLanguage.mergeStats(dlSub);
         }
+
+        return dlSub ;
     }
 
     private static void InitFoldersToExclude()  {

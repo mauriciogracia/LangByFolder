@@ -11,7 +11,7 @@ public class ReportOptions {
 
     public static String usageOptions =
         "\nLangByFolder <path> <options> <outFile.csv>\n\t<options>:\n\t\t-a: show all files (default)\n\t\t-f: show only folders\n\t\t-c: custom artifact\n\t\t-h: show hidden files/folders\n\t\t-u: show unknown extensions (default)" ;
-    private void checkArguments(String[] args) {
+    private void parseArguments(String[] args) {
         int numArgs ;
 
         validArguments = false ;
@@ -31,16 +31,13 @@ public class ReportOptions {
     private void setDefaultReportOptions() {
         showFolderStats = true ;
         showHiddenItems = false ;
-        showUnknownExtensions = true ;
+        showUnknownExtensions = false ;
         reportDetailLevel = ReportDetailLevel.FOLDER ;
     }
     public static ReportOptions processArguments(String[] args) {
         ReportOptions options = new ReportOptions();
-        boolean validArgs ;
 
-        options.checkArguments(args) ;
-
-
+        options.parseArguments(args) ;
 
         return options ;
     }
