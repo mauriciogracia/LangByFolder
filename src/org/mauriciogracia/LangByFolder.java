@@ -58,10 +58,10 @@ public class LangByFolder {
         languages.add(new LanguageExtensions("C++",cPlusPlusExt)) ;
 
         String []vsProjectSolution = {".csproj", ".sln"} ;
-        languages.add(new LanguageExtensions("vsProjectSolution",cSharpExt)) ;
+        languages.add(new LanguageExtensions("vsProjectSolution(sln,csproj)",vsProjectSolution)) ;
 
         String []winArtifact = {".dll", ".exe", ".pdb"} ;
-        languages.add(new LanguageExtensions("Windows artifact",winArtifact)) ;
+        languages.add(new LanguageExtensions("Windows(exe,dll,pdb)",winArtifact)) ;
 
         String []rubyExt = {".rb"} ;
         languages.add(new LanguageExtensions("Ruby",rubyExt)) ;
@@ -174,11 +174,11 @@ public class LangByFolder {
 
             ItemLanguage dlSub = new ItemLanguage(subDirPath);
 
-            if((reportOptions.reportDetailLevel != ReportDetailLevel.CUSTOM) || (!artifacts.contains(artifactName))) {
+            if((reportOptions.reportDetailLevel == ReportDetailLevel.CUSTOM) && !artifacts.contains(artifactName)) {
                 artifacts.add(artifactName);
-                items.add(dlSub);
             }
 
+            items.add(dlSub);
             itemLanguage.numSubfolders++;
             IterateFolder(dlSub);
             itemLanguage.mergeStats(dlSub);

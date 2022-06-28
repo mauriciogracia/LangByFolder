@@ -32,7 +32,7 @@ public class ReportOptions {
         showFolderStats = true ;
         showHiddenItems = false ;
         showUnknownExtensions = true ;
-        reportDetailLevel = ReportDetailLevel.ALL_ITEMS ;
+        reportDetailLevel = ReportDetailLevel.FOLDER ;
     }
     public static ReportOptions processArguments(String[] args) {
         ReportOptions options = new ReportOptions();
