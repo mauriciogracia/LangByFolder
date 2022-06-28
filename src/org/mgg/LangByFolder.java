@@ -1,6 +1,8 @@
 package org.mgg;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -135,6 +137,7 @@ public class LangByFolder {
             String itemName ;
             String childPathStr ;
             ItemLanguage childIL ;
+            BasicFileAttributes itemAttributes ;
 
             if(folderItems != null) {
                 for (File folderItem : folderItems) {
@@ -144,9 +147,11 @@ public class LangByFolder {
                     childIL = null ;
 
                     if ((reportOptions.showHiddenItems || !folderItem.isHidden()) && !itemName.startsWith("/.")) {
-                        if (folderItem.isDirectory()) {
+                        itemAttributes = Files.readAttributes(folderItem.toPath(), BasicFileAttributes.class);
+
+                        if (itemAttributes.isDirectory()) {
                             childIL = processFolder(currentFolder, itemName, reportOptions);
-                        } else if (folderItem.isFile()) {
+                        } else if (itemAttributes.isRegularFile()) {
                             String whichLanguage = determineFileLanguage(itemName, reportOptions);
                             currentFolder.numFiles++;
 
