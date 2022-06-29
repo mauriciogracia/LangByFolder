@@ -36,6 +36,7 @@ public class ReportOptions {
         int numArgs ;
         String outputPath ;
         String options ;
+
         validArguments = false ;
         numArgs = args.length ;
 
@@ -45,14 +46,10 @@ public class ReportOptions {
             output = System.out ;
 
             validArguments = parseOptions(args);
-            /*
-            if output file is pass as parameter
-                String destination = "file1.txt";
 
-            try(PrintStream ps = new PrintStream(destination)){
-            https://riptutorial.com/java/example/12976/writing-a-file-using-printstream
-
-            */
+        }
+        else {
+            errorMessage = "Wrong number of arguments, path is required, other arguments are optional" ;
         }
     }
 
@@ -82,6 +79,12 @@ public class ReportOptions {
                         case "f":
                             reportDetailLevel = ReportDetailLevel.FOLDER ;
                             break ;
+                        case "h":
+                            showHiddenItems = true ;
+                            break ;
+                        case "u":
+                            showUnknownExtensions = true ;
+                            break ;
                     }
                 }
                 else {
@@ -103,6 +106,15 @@ public class ReportOptions {
         return optionsParsedOk ;
     }
 
+    //@todo: process 3rd argument or 2nd argument when options are specified
+            /*
+            if output file is pass as parameter
+                String destination = "file1.txt";
+
+            try(PrintStream ps = new PrintStream(destination)){
+            https://riptutorial.com/java/example/12976/writing-a-file-using-printstream
+
+            */
 
     public static ReportOptions processArguments(String[] args) {
         ReportOptions options = new ReportOptions();
