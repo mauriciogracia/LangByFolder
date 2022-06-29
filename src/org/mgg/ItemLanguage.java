@@ -120,7 +120,7 @@ public class ItemLanguage implements Comparable<ItemLanguage>{
         }
 
         resp += "|" + isApiService;
-        resp += "|numTestFiles:" + numTestFiles;
+        resp += "|" + numTestFiles;
         resp += "|" + numSubfolders;
         resp += "|" + numFiles;
 

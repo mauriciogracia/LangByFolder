@@ -21,6 +21,7 @@ public class LangByFolder {
         reportOptions = ReportOptions.processArguments(args);
 
         if(!reportOptions.validArguments) {
+            System.out.println(reportOptions.errorMessage) ;
             System.out.println(usageOptions);
         }
         else {
@@ -200,9 +201,11 @@ public class LangByFolder {
 
             if((reportOptions.reportDetailLevel == ReportDetailLevel.CUSTOM) && !artifacts.contains(artifactName)) {
                 artifacts.add(artifactName);
+                items.add(dlSub);
             }
-
-            items.add(dlSub);
+            else if((reportOptions.reportDetailLevel != ReportDetailLevel.CUSTOM)) {
+                items.add(dlSub);
+            }
             itemLanguage.numSubfolders++;
             iterateFolder(dlSub, reportOptions);
         }
