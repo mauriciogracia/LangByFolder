@@ -185,6 +185,8 @@ public class LangByFolder {
         }
         catch (Exception ex) {
             System.err.println("Error:" + ex.getMessage());
+            //@todo: unix links are being shown here, needs to be fixed
+            ex.printStackTrace(System.err);
         }
     }
 
