@@ -1,5 +1,7 @@
 package org.mgg;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
@@ -93,12 +95,19 @@ public class ReportOptions {
                 }
             }
 
+            if(numArgs == 3){
+                setOutputStream(args[2]);
+            }
+
             optionsParsedOk = (errorMessage == null) ;
         }
         else if(numArgs == 3){
-             errorMessage = "option must start with '-'" ;
+             errorMessage = "The options must start with a single '-'" ;
         }
         else {
+            if(numArgs == 2){
+                setOutputStream(args[1]);
+            }
             setDefaultReportOptions();
             optionsParsedOk = true ;
         }
@@ -106,16 +115,13 @@ public class ReportOptions {
         return optionsParsedOk ;
     }
 
-    //@todo: process 3rd argument or 2nd argument when options are specified
-            /*
-            if output file is pass as parameter
-                String destination = "file1.txt";
-
-            try(PrintStream ps = new PrintStream(destination)){
-            https://riptutorial.com/java/example/12976/writing-a-file-using-printstream
-
-            */
-
+    private void setOutputStream(String reportDestination) {
+        try {
+            this.output = new PrintStream(reportDestination) ;
+        } catch (FileNotFoundException e) {
+            errorMessage = e.getMessage();
+        }
+    }
     public static ReportOptions processArguments(String[] args) {
         ReportOptions options = new ReportOptions();
 
