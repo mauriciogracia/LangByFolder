@@ -12,6 +12,7 @@ public class ItemLanguage implements Comparable<ItemLanguage>{
     public boolean isApiService ;
     private final ArrayList<DirLanguageStats> langStats ;
     static int prefixLength ;
+    public static String columnSeparator = ";";
 
     public ItemLanguage(String itemPath) {
         this.itemPath = itemPath ;
@@ -64,21 +65,19 @@ public class ItemLanguage implements Comparable<ItemLanguage>{
 
     public String getStats() {
         StringBuilder langStatsStr = new StringBuilder();
-        DirLanguageStats dls ;
-        int i ;
         int max ;
 
         max = langStats.size() ;
         Collections.sort(langStats);
 
-        for(i = 0; i < max; i++) {
-            dls = langStats.get(i) ;
+        for(int i = 0; i < max; i++) {
+            DirLanguageStats dls = langStats.get(i) ;
 
             langStatsStr.append(dls.languageName);
-            langStatsStr.append("|").append(dls.numFiles);
+            langStatsStr.append(columnSeparator).append(dls.numFiles);
 
             if(i +1 != max) {
-                langStatsStr.append("|");
+                langStatsStr.append(columnSeparator);
             }
         }
 
@@ -109,36 +108,43 @@ public class ItemLanguage implements Comparable<ItemLanguage>{
     }
 
     public String toString(ReportOptions reportOptions) {
-        String resp ;
+        StringBuilder resp ;
+
+        resp = new StringBuilder() ;
 
         if(reportOptions.reportDetailLevel != ReportDetailLevel.CUSTOM) {
-            resp = relativePath(itemPath, reportOptions.rootFolder);
-            resp += "|" + artifactName;
+            resp.append(relativePath(itemPath, reportOptions.rootFolder));
+            resp.append(columnSeparator).append(artifactName);
         }
         else {
-            resp = artifactName ;
+            resp.append(artifactName) ;
         }
 
-        resp += "|" + isApiService;
-        resp += "|" + numTestFiles;
-        resp += "|" + numSubfolders;
-        resp += "|" + numFiles;
+        resp.append(columnSeparator).append(isApiService);
+        resp.append(columnSeparator).append(numTestFiles);
+        resp.append(columnSeparator).append(numSubfolders);
+        resp.append(columnSeparator).append(numFiles);
+        resp.append(columnSeparator).append(getStats());
 
-
-        resp += "|" + getStats();
-
-        return resp ;
+        return resp.toString() ;
     }
 
     public static String getHeader(ReportOptions reportOptions) {
-        String header = "";
+        StringBuilder header ;
+
+        header = new StringBuilder() ;
 
         if(reportOptions.reportDetailLevel != ReportDetailLevel.CUSTOM) {
-            header += "Folder|";
+            header.append("Folder").append(columnSeparator);
         }
-        header += "Artifact|isApiService|numTestFiles|# Subfolders|# Total Files|Languages" ;
+        header.append("Artifact").append(columnSeparator);
+        header.append("isApiService").append(columnSeparator);
+        header.append("numTestFiles").append(columnSeparator);
+        header.append("# Subfolders").append(columnSeparator);
+        header.append("# Total Files").append(columnSeparator);
+        header.append("Languages").append(columnSeparator);
 
-        return header ;
+        return header.toString() ;
     }
 
     @Override
