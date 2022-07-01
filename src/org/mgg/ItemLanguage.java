@@ -63,12 +63,12 @@ public class ItemLanguage implements Comparable<ItemLanguage>{
         }
     }
 
-    public String getStats() {
+    public String getStats(ReportOptions reportOptions) {
         StringBuilder langStatsStr = new StringBuilder();
         int max ;
 
         max = langStats.size() ;
-        Collections.sort(langStats);
+        langStats.sort(reportOptions.langStatComparator);
 
         for(int i = 0; i < max; i++) {
             DirLanguageStats dls = langStats.get(i) ;
@@ -124,7 +124,7 @@ public class ItemLanguage implements Comparable<ItemLanguage>{
         resp.append(columnSeparator).append(numTestFiles);
         resp.append(columnSeparator).append(numSubfolders);
         resp.append(columnSeparator).append(numFiles);
-        resp.append(columnSeparator).append(getStats());
+        resp.append(columnSeparator).append(getStats(reportOptions));
 
         return resp.toString() ;
     }
