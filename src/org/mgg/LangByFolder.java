@@ -2,6 +2,8 @@ package org.mgg;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,17 +31,22 @@ public class LangByFolder {
         }
     }
     public static void processRootFolder(ReportOptions reportOptions) {
-        initLanguageExtensions();
-        initFoldersToExclude();
+        if(Files.exists(Paths.get(reportOptions.rootFolder))) {
+            initLanguageExtensions();
+            initFoldersToExclude();
 
-        //Iterate the specified folder
-        ItemLanguage.prefixLength = reportOptions.rootFolder.length();
-        ItemLanguage dl = new ItemLanguage(reportOptions.rootFolder);
-        iterateFolder(dl, reportOptions);
+            //Iterate the specified folder
+            ItemLanguage.prefixLength = reportOptions.rootFolder.length();
+            ItemLanguage dl = new ItemLanguage(reportOptions.rootFolder);
+            iterateFolder(dl, reportOptions);
 
-        Collections.sort(items);
+            Collections.sort(items);
 
-        showResults(reportOptions);
+            showResults(reportOptions);
+        }
+        else {
+            System.err.println("Path does not exist:" + reportOptions.rootFolder);
+        }
     }
 
     private static void showResults(ReportOptions reportOptions) {
@@ -131,6 +138,8 @@ public class LangByFolder {
         return langName ;
     }
 
+    static int depthLevel = 0 ;
+
     private static void iterateFolder(ItemLanguage currentFolder, ReportOptions reportOptions)  {
         try {
             File folder = new File(currentFolder.itemPath);
@@ -140,6 +149,7 @@ public class LangByFolder {
             ItemLanguage childIL ;
             BasicFileAttributes itemAttributes ;
 
+            depthLevel++;
             if(folderItems != null) {
                 for (File folderItem : folderItems) {
                     itemName = folderItem.getName();
@@ -147,7 +157,7 @@ public class LangByFolder {
 
                     childIL = null ;
 
-                    if ((reportOptions.showHiddenItems || !folderItem.isHidden()) && !itemName.startsWith("/.")) {
+                    if (reportOptions.showHiddenItems || (!folderItem.isHidden() && !itemName.startsWith("/."))) {
                         itemAttributes = Files.readAttributes(folderItem.toPath(), BasicFileAttributes.class);
 
                         if (itemAttributes.isDirectory()) {
@@ -161,7 +171,8 @@ public class LangByFolder {
                             }
 
                             childIL = new ItemLanguage(childPathStr);
-                            childIL.addLanguageFileCount(whichLanguage);
+                            //@todo this shows the stats for each file but alters the starts of the parent folder
+                            //childIL.addLanguageFileCount(whichLanguage);
 
                             if(testLang.isExtensionMatchedBy(itemName) || testLang.isContainedBy(itemName))
                             {
@@ -182,11 +193,15 @@ public class LangByFolder {
                     }
                 }
             }
+            depthLevel--;
+            //add the root folder
+            if(depthLevel == 0) {
+                items.add(currentFolder) ;
+            }
         }
         catch (Exception ex) {
             System.err.println("Error:" + ex.getMessage());
             //@todo: unix links are being shown here, needs to be fixed
-            //@todo: add option to show languages from most used to less used
             ex.printStackTrace(System.err);
         }
     }

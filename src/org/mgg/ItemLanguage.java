@@ -1,7 +1,6 @@
 package org.mgg;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class ItemLanguage implements Comparable<ItemLanguage>{
     public String itemPath ;
@@ -9,7 +8,7 @@ public class ItemLanguage implements Comparable<ItemLanguage>{
     public int numSubfolders;
     public int numFiles ;
     public int numTestFiles ;
-    public boolean isApiService ;
+    public boolean isService;
     private final ArrayList<DirLanguageStats> langStats ;
     static int prefixLength ;
     public static String columnSeparator = ";";
@@ -17,7 +16,7 @@ public class ItemLanguage implements Comparable<ItemLanguage>{
     public ItemLanguage(String itemPath) {
         this.itemPath = itemPath ;
         artifactName = determineArtifact(itemPath) ;
-        isApiService = itemPath.contains("-service") ;
+        isService = itemPath.toLowerCase().contains("service") ;
         numTestFiles = 0 ;
         numSubfolders = 0 ;
         numFiles = 0 ;
@@ -56,7 +55,7 @@ public class ItemLanguage implements Comparable<ItemLanguage>{
             dls = new DirLanguageStats(langName) ;
         }
 
-        dls.numFiles++ ;
+        dls.increaseNumFiles(1);
 
         if(!found) {
             langStats.add(dls) ;
@@ -74,7 +73,7 @@ public class ItemLanguage implements Comparable<ItemLanguage>{
             DirLanguageStats dls = langStats.get(i) ;
 
             langStatsStr.append(dls.languageName);
-            langStatsStr.append(columnSeparator).append(dls.numFiles);
+            langStatsStr.append(columnSeparator).append(dls.getNumFiles());
 
             if(i +1 != max) {
                 langStatsStr.append(columnSeparator);
@@ -95,7 +94,8 @@ public class ItemLanguage implements Comparable<ItemLanguage>{
 
             if(pos >= 0)
             {
-                langStats.get(pos).numFiles += dls.numFiles ;
+                DirLanguageStats current = langStats.get(pos);
+                current.increaseNumFiles(dls.getNumFiles()) ;
             }
             else {
                 langStats.add(dls) ;
@@ -109,18 +109,29 @@ public class ItemLanguage implements Comparable<ItemLanguage>{
 
     public String toString(ReportOptions reportOptions) {
         StringBuilder resp ;
+        String relPath ;
 
         resp = new StringBuilder() ;
 
         if(reportOptions.reportDetailLevel != ReportDetailLevel.CUSTOM) {
-            resp.append(relativePath(itemPath, reportOptions.rootFolder));
-            resp.append(columnSeparator).append(artifactName);
+            relPath = relativePath(itemPath, reportOptions.rootFolder) ;
+
+            if(relPath.length()== 0) {
+                relPath = "ROOT" + columnSeparator + reportOptions.rootFolder;
+                resp.append(relPath);
+            }
+            else {
+                resp.append(relPath);
+                resp.append(columnSeparator).append(artifactName);
+            }
+
+
         }
         else {
             resp.append(artifactName) ;
         }
 
-        resp.append(columnSeparator).append(isApiService);
+        resp.append(columnSeparator).append(isService);
         resp.append(columnSeparator).append(numTestFiles);
         resp.append(columnSeparator).append(numSubfolders);
         resp.append(columnSeparator).append(numFiles);
@@ -138,7 +149,7 @@ public class ItemLanguage implements Comparable<ItemLanguage>{
             header.append("Folder").append(columnSeparator);
         }
         header.append("Artifact").append(columnSeparator);
-        header.append("isApiService").append(columnSeparator);
+        header.append("isService").append(columnSeparator);
         header.append("numTestFiles").append(columnSeparator);
         header.append("# Subfolders").append(columnSeparator);
         header.append("# Total Files").append(columnSeparator);
