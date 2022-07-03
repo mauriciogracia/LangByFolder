@@ -7,6 +7,10 @@ import java.util.Comparator;
 import java.util.List;
 
 public class ReportOptions {
+    private final static String[] testExt = {"spec.ts","spec.py","spec.scala","test"} ;
+    final static LanguageExtensions testLang = new LanguageExtensions("TestFiles",testExt) ;
+    public static String columnSeparator = ";";
+    static int rootFolderPathLength;
     public boolean validArguments ;
     public String errorMessage ;
     public String rootFolder ;
@@ -16,7 +20,7 @@ public class ReportOptions {
 
     public PrintStream output ;
 
-    public Comparator<DirLanguageStats>  langStatComparator ;
+    public Comparator<LanguageStats>  langStatComparator ;
     private final static List<String> validOptions = Arrays.asList("a","f","c","h","u","o","n");
 
     public static String usageOptions =
@@ -33,6 +37,24 @@ public class ReportOptions {
                 "\n\t\t-o: order stats by language occurrence (default)" +
                 "\n\t\t-n: order stats by language name" +
                 "\n\n\tExample: $java org.mgg.LangByFolder /your/path -fhu output.txt" ;
+
+    public String getHeader() {
+        StringBuilder header ;
+
+        header = new StringBuilder() ;
+
+        if(reportDetailLevel != ReportDetailLevel.CUSTOM) {
+            header.append("Folder").append(columnSeparator);
+        }
+        header.append("Artifact").append(columnSeparator);
+        header.append("isService").append(columnSeparator);
+        header.append("numTestFiles").append(columnSeparator);
+        header.append("# Subfolders").append(columnSeparator);
+        header.append("# Total Files").append(columnSeparator);
+        header.append("Languages").append(columnSeparator);
+
+        return header.toString() ;
+    }
 
     private void setDefaultReportOptions() {
         reportDetailLevel = ReportDetailLevel.FOLDER ;

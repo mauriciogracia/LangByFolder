@@ -2,7 +2,6 @@ package org.mgg;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
@@ -12,11 +11,10 @@ import static org.mgg.ReportOptions.usageOptions;
 
 public class LangByFolder {
     private static ArrayList<LanguageExtensions> languages  ;
-    private final static ArrayList<ItemLanguage> items = new ArrayList<>();
+    private final static ArrayList<FileContext> items = new ArrayList<>();
     private final static ArrayList<String> excludeFolders = new ArrayList<>();
     private final static ArrayList<String> artifacts = new ArrayList<>();
-    private final static String[] testExt = {"spec.ts","spec.py","spec.scala","test"} ;
-    private final static LanguageExtensions testLang = new LanguageExtensions("TestFiles",testExt) ;
+
     public static void main(String[] args) {
         ReportOptions reportOptions ;
 
@@ -36,9 +34,9 @@ public class LangByFolder {
             initFoldersToExclude();
 
             //Iterate the specified folder
-            ItemLanguage.prefixLength = reportOptions.rootFolder.length();
-            ItemLanguage dl = new ItemLanguage(reportOptions.rootFolder);
-            iterateFolder(dl, reportOptions);
+            ReportOptions.rootFolderPathLength = reportOptions.rootFolder.length();
+            DirectoryContext dc = new DirectoryContext(reportOptions.rootFolder);
+            iterateFolder(dc, reportOptions);
 
             Collections.sort(items);
 
@@ -50,9 +48,9 @@ public class LangByFolder {
     }
 
     private static void showResults(ReportOptions reportOptions) {
-        reportOptions.output.println(ItemLanguage.getHeader(reportOptions));
+        reportOptions.output.println(reportOptions.getHeader());
 
-        for (ItemLanguage item : items) {
+        for (FileContext item : items) {
             reportOptions.output.println(item.toString(reportOptions));
         }
     }
@@ -140,20 +138,20 @@ public class LangByFolder {
 
     static int depthLevel = 0 ;
 
-    private static void iterateFolder(ItemLanguage currentFolder, ReportOptions reportOptions)  {
+    private static void iterateFolder(DirectoryContext dirContext, ReportOptions reportOptions)  {
         try {
-            File folder = new File(currentFolder.itemPath);
+            File folder = new File(dirContext.itemPath);
             File[] folderItems = folder.listFiles();
             String itemName ;
             String childPathStr ;
-            ItemLanguage childIL ;
+            FileContext childIL ;
             BasicFileAttributes itemAttributes ;
 
             depthLevel++;
             if(folderItems != null) {
                 for (File folderItem : folderItems) {
                     itemName = folderItem.getName();
-                    childPathStr = currentFolder.itemPath + "/" + itemName ;
+                    childPathStr = dirContext.itemPath + "/" + itemName ;
 
                     childIL = null ;
 
@@ -161,34 +159,24 @@ public class LangByFolder {
                         itemAttributes = Files.readAttributes(folderItem.toPath(), BasicFileAttributes.class);
 
                         if (itemAttributes.isDirectory()) {
-                            childIL = processFolder(currentFolder, itemName, reportOptions);
+                            childIL = processFolder(dirContext, itemName, reportOptions);
                         } else if (itemAttributes.isRegularFile()) {
                             String whichLanguage = determineFileLanguage(itemName, reportOptions);
-                            currentFolder.numFiles++;
+                            //dirContext.setNumFiles(dirContext.getNumFiles() + 1);
 
-                            if (!whichLanguage.equals("unknown")) {
-                                currentFolder.addLanguageFileCount(whichLanguage);
-                            }
-
-                            childIL = new ItemLanguage(childPathStr);
+                            childIL = new FileContext(childPathStr);
                             //@todo this shows the stats for each file but alters the starts of the parent folder
-                            //childIL.addLanguageFileCount(whichLanguage);
-
-                            if(testLang.isExtensionMatchedBy(itemName) || testLang.isContainedBy(itemName))
-                            {
-                                childIL.numTestFiles += 1 ;
-                            }
+                            childIL.addLanguageFileCount(whichLanguage);
 
                             if (reportOptions.reportDetailLevel == ReportDetailLevel.ALL_ITEMS) {
                                 items.add(childIL);
                             }
-
                         }
 
                         //merge stats from child items (both folders/files) with current parent element
                         if(childIL != null)
                         {
-                            currentFolder.mergeStats(childIL);
+                            dirContext.mergeFile(childIL);
                         }
                     }
                 }
@@ -196,36 +184,33 @@ public class LangByFolder {
             depthLevel--;
             //add the root folder
             if(depthLevel == 0) {
-                items.add(currentFolder) ;
+                items.add(dirContext) ;
             }
         }
         catch (Exception ex) {
-            System.err.println("Error:" + ex.getMessage());
             //@todo: unix links are being shown here, needs to be fixed
+            System.err.println("Error:" + ex.getMessage());
             ex.printStackTrace(System.err);
         }
     }
 
-    private static ItemLanguage processFolder(ItemLanguage itemLanguage,String itemName, ReportOptions reportOptions) {
-        String artifactName ;
+    private static DirectoryContext processFolder(DirectoryContext dirContext, String itemName, ReportOptions reportOptions) {
         String subDirPath ;
-        ItemLanguage dlSub = null ;
+        DirectoryContext dlSub = null ;
 
         if(!excludeFolders.contains(itemName)) {
-            subDirPath = itemLanguage.itemPath + "/" + itemName ;
-            artifactName = ItemLanguage.determineArtifact(subDirPath) ;
+            subDirPath = dirContext.itemPath + "/" + itemName ;
+            dlSub = new DirectoryContext(subDirPath);
 
-            dlSub = new ItemLanguage(subDirPath);
-
-            if((reportOptions.reportDetailLevel == ReportDetailLevel.CUSTOM) && !artifacts.contains(artifactName)) {
-                artifacts.add(artifactName);
+            if((reportOptions.reportDetailLevel == ReportDetailLevel.CUSTOM) && !artifacts.contains(dlSub.artifactName)) {
+                artifacts.add(dlSub.artifactName);
                 items.add(dlSub);
             }
             else if((reportOptions.reportDetailLevel != ReportDetailLevel.CUSTOM)) {
                 items.add(dlSub);
             }
-            itemLanguage.numSubfolders++;
             iterateFolder(dlSub, reportOptions);
+            dirContext.mergeDirectory(dlSub);
         }
 
         return dlSub ;

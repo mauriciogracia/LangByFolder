@@ -1,10 +1,10 @@
 package org.mgg;
 
-public class DirLanguageStats implements Comparable<DirLanguageStats>{
+public class LanguageStats implements Comparable<LanguageStats>{
     public String languageName;
     private int numFiles;
 
-    DirLanguageStats(String langName) {
+    LanguageStats(String langName) {
         languageName = langName ;
         numFiles = 0;
     }
@@ -17,15 +17,15 @@ public class DirLanguageStats implements Comparable<DirLanguageStats>{
     public boolean equals(Object other) {
         boolean isEqual = false ;
 
-        if (other instanceof  DirLanguageStats) {
-            isEqual = this.languageName.equals(((DirLanguageStats)other).languageName) ;
+        if (other instanceof LanguageStats) {
+            isEqual = this.languageName.equals(((LanguageStats)other).languageName) ;
         }
 
         return isEqual ;
     }
 
     @Override
-    public int compareTo(DirLanguageStats other) {
+    public int compareTo(LanguageStats other) {
         return languageName.compareTo(other.languageName) ;
     }
 
