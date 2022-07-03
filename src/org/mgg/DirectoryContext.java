@@ -1,43 +1,70 @@
 package org.mgg;
 
+import java.util.ArrayList;
+
 public class DirectoryContext extends FileContext {
     private int numSubfolders;
     private int numFiles ;
     private int numTestFiles ;
     private int numServices;
-
+    public final ArrayList<LanguageStats> langStats ;
     public DirectoryContext(String itemPath) {
         super(itemPath) ;
         numSubfolders = 0 ;
         numFiles = 0;
         numTestFiles = 0 ;
         numServices = 0 ;
+        langStats = new ArrayList<>() ;
     }
 
     public void mergeFile(FileContext file) {
-        int pos ;
         this.numFiles++;
         this.numTestFiles += getNumTestFiles() ;
         this.numServices += getNumServices() ;
 
-        for(LanguageStats dls : file.langStats) {
-            pos = langStats.indexOf(dls) ;
+        boolean found = false ;
 
-            if(pos >= 0)
-            {
-                LanguageStats current = langStats.get(pos);
-                current.increaseNumFiles(dls.getNumFiles()) ;
-            }
-            else {
-                langStats.add(dls) ;
+        for(LanguageStats dls : langStats) {
+            found = dls.languageName.equals(file.langName) ;
+
+            if (found) {
+                dls.increaseNumFiles(1);
+                break ;
             }
         }
+
+        if(!found) {
+            LanguageStats ls =new LanguageStats(file.langName) ;
+            ls.increaseNumFiles(1);
+            langStats.add(ls) ;
+        }
+    }
+
+    public String getLangStats(ReportOptions reportOptions) {
+        StringBuilder langStatsStr = new StringBuilder();
+        int max ;
+
+        max = langStats.size() ;
+        langStats.sort(reportOptions.langStatComparator);
+
+        for(int i = 0; i < max; i++) {
+            LanguageStats dls = langStats.get(i) ;
+
+            langStatsStr.append(dls.languageName);
+            langStatsStr.append(ReportOptions.columnSeparator).append(dls.getNumFiles());
+
+            if(i + 1 != max) {
+                langStatsStr.append(ReportOptions.columnSeparator);
+            }
+        }
+
+        return langStatsStr.toString();
     }
     public void mergeDirectory(DirectoryContext subItem) {
         int pos ;
 
         numFiles += subItem.numFiles;
-        numSubfolders += subItem.numSubfolders ;
+        numSubfolders += subItem.numSubfolders +1 ;
         numTestFiles += subItem.numTestFiles ;
         numServices += subItem.numServices ;
 
@@ -69,7 +96,7 @@ public class DirectoryContext extends FileContext {
             relPath = relativePath(itemPath, reportOptions.rootFolder) ;
 
             if(relPath.length()== 0) {
-                relPath = "ROOT" + ReportOptions.columnSeparator + reportOptions.rootFolder;
+                relPath = reportOptions.rootFolder + ReportOptions.columnSeparator + "ROOT" ;
                 resp.append(relPath);
             }
             else {

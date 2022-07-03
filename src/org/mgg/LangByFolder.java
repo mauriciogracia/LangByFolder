@@ -142,47 +142,39 @@ public class LangByFolder {
         try {
             File folder = new File(dirContext.itemPath);
             File[] folderItems = folder.listFiles();
-            String itemName ;
+            String childName ;
             String childPathStr ;
-            FileContext childIL ;
             BasicFileAttributes itemAttributes ;
 
             depthLevel++;
             if(folderItems != null) {
                 for (File folderItem : folderItems) {
-                    itemName = folderItem.getName();
-                    childPathStr = dirContext.itemPath + "/" + itemName ;
+                    childName = folderItem.getName();
+                    childPathStr = dirContext.itemPath + "/" + childName ;
 
-                    childIL = null ;
-
-                    if (reportOptions.showHiddenItems || (!folderItem.isHidden() && !itemName.startsWith("/."))) {
+                    if (reportOptions.showHiddenItems || (!folderItem.isHidden() && !childName.startsWith("/."))) {
                         itemAttributes = Files.readAttributes(folderItem.toPath(), BasicFileAttributes.class);
 
                         if (itemAttributes.isDirectory()) {
-                            childIL = processFolder(dirContext, itemName, reportOptions);
+                            processFolder(dirContext, childName, reportOptions);
                         } else if (itemAttributes.isRegularFile()) {
-                            String whichLanguage = determineFileLanguage(itemName, reportOptions);
-                            //dirContext.setNumFiles(dirContext.getNumFiles() + 1);
+                            //@todo; this should be part of the FileContext contructor
+                            String whichLanguage = determineFileLanguage(childName, reportOptions);
 
-                            childIL = new FileContext(childPathStr);
-                            //@todo this shows the stats for each file but alters the starts of the parent folder
-                            childIL.addLanguageFileCount(whichLanguage);
+                            FileContext childIL = new FileContext(childPathStr);
+                            childIL.setLanguageName(whichLanguage);
 
                             if (reportOptions.reportDetailLevel == ReportDetailLevel.ALL_ITEMS) {
                                 items.add(childIL);
                             }
-                        }
 
-                        //merge stats from child items (both folders/files) with current parent element
-                        if(childIL != null)
-                        {
                             dirContext.mergeFile(childIL);
                         }
                     }
                 }
             }
             depthLevel--;
-            //add the root folder
+            //add the root folder stats
             if(depthLevel == 0) {
                 items.add(dirContext) ;
             }
@@ -194,13 +186,12 @@ public class LangByFolder {
         }
     }
 
-    private static DirectoryContext processFolder(DirectoryContext dirContext, String itemName, ReportOptions reportOptions) {
+    private static void processFolder(DirectoryContext dirContext, String itemName, ReportOptions reportOptions) {
         String subDirPath ;
-        DirectoryContext dlSub = null ;
 
         if(!excludeFolders.contains(itemName)) {
             subDirPath = dirContext.itemPath + "/" + itemName ;
-            dlSub = new DirectoryContext(subDirPath);
+            DirectoryContext dlSub = new DirectoryContext(subDirPath);
 
             if((reportOptions.reportDetailLevel == ReportDetailLevel.CUSTOM) && !artifacts.contains(dlSub.artifactName)) {
                 artifacts.add(dlSub.artifactName);
@@ -212,8 +203,6 @@ public class LangByFolder {
             iterateFolder(dlSub, reportOptions);
             dirContext.mergeDirectory(dlSub);
         }
-
-        return dlSub ;
     }
 
     private static void initFoldersToExclude()  {

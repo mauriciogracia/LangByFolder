@@ -1,19 +1,16 @@
 package org.mgg;
 
-import java.util.ArrayList;
-
 public class FileContext implements ReportableItem, Comparable<FileContext>{
     public String itemPath ;
     public String artifactName;
     public boolean isService;
     public boolean isTestFile;
-    public final ArrayList<LanguageStats> langStats ;
+    public String langName ;
 
     public FileContext(String itemPath) {
         this.itemPath = itemPath ;
         artifactName = determineArtifact(itemPath) ;
         isService = itemPath.toLowerCase().contains("service") ;
-        langStats = new ArrayList<>() ;
         isTestFile = (ReportOptions.testLang.isExtensionMatchedBy(itemPath) || ReportOptions.testLang.isContainedBy(itemPath)) ;
     }
 
@@ -35,45 +32,14 @@ public class FileContext implements ReportableItem, Comparable<FileContext>{
         return aux ;
     }
 
-    public final void addLanguageFileCount(String langName) {
-        boolean found = false;
-        LanguageStats dls = null;
-        int i ;
-
-        for(i = 0; !found && (i < langStats.size()); i++) {
-            dls = langStats.get(i) ;
-            found = dls.languageName.equals(langName) ;
-        }
-
-        if(!found) {
-            dls = new LanguageStats(langName) ;
-        }
-
-        dls.increaseNumFiles(1);
-
-        if(!found) {
-            langStats.add(dls) ;
-        }
+    public final void setLanguageName(String langName) {
+        this.langName = langName ;
     }
-    public final String getLangStats(ReportOptions reportOptions) {
-        StringBuilder langStatsStr = new StringBuilder();
-        int max ;
+    public String getLangStats(ReportOptions reportOptions) {
 
-        max = langStats.size() ;
-        langStats.sort(reportOptions.langStatComparator);
-
-        for(int i = 0; i < max; i++) {
-            LanguageStats dls = langStats.get(i) ;
-
-            langStatsStr.append(dls.languageName);
-            langStatsStr.append(ReportOptions.columnSeparator).append(dls.getNumFiles());
-
-            if(i + 1 != max) {
-                langStatsStr.append(ReportOptions.columnSeparator);
-            }
-        }
-
-        return langStatsStr.toString();
+        return langName +
+                ReportOptions.columnSeparator +
+                1;
     }
 
     private static String relativePath(String folder, String rootFolder) {

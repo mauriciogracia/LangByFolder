@@ -4,10 +4,7 @@ public class LanguageExtensions {
     public String languageName ;
     public String []extensions;
 
-    public int numFiles ;
-
     public LanguageExtensions(String langName, String [] ext) {
-        numFiles = 0 ;
         languageName = langName ;
         extensions = ext ;
     }

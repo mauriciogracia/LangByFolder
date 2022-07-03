@@ -32,4 +32,5 @@ public class LanguageStats implements Comparable<LanguageStats>{
     public int getNumFiles() {
         return numFiles;
     }
+
 }
