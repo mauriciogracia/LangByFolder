@@ -2,15 +2,18 @@ package org.mgg;
 
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
 public class ReportOptions {
     private final static String[] testExt = {"spec.ts","spec.py","spec.scala","test"} ;
-    final static LanguageExtensions testLang = new LanguageExtensions("TestFiles",testExt) ;
-    public static String columnSeparator = ";";
-    static int rootFolderPathLength;
+    final LanguageExtensions testLang = new LanguageExtensions("TestFiles",testExt) ;
+    final ArrayList<String> excludeFolders = new ArrayList<>();
+    public String columnSeparator = ";";
+    int rootFolderPathLength;
+    public ArrayList<LanguageExtensions> languages  ;
     public boolean validArguments ;
     public String errorMessage ;
     public String rootFolder ;
@@ -37,6 +40,77 @@ public class ReportOptions {
                 "\n\t\t-o: order stats by language occurrence (default)" +
                 "\n\t\t-n: order stats by language name" +
                 "\n\n\tExample: $java org.mgg.LangByFolder /your/path -fhu output.txt" ;
+
+    public ReportOptions(String args[]) {
+        parseArguments(args);
+        initLanguageExtensions();
+        initFoldersToExclude();
+        rootFolderPathLength = rootFolder.length();
+    }
+
+    void initLanguageExtensions() {
+        languages = new ArrayList<>() ;
+
+        String []tsExt = {".ts"} ;
+        languages.add(new LanguageExtensions("Typescript",tsExt)) ;
+
+        String []scalaExt = {".scala"} ;
+        languages.add(new LanguageExtensions("Scala",scalaExt)) ;
+
+        String []javaExt = {".java",".jar","war"} ;
+        languages.add(new LanguageExtensions("Java",javaExt)) ;
+
+        String []jsExt = {".js"} ;
+        languages.add(new LanguageExtensions("Javascript",jsExt)) ;
+
+        String []cSharpExt = {".cs"} ;
+        languages.add(new LanguageExtensions("C#",cSharpExt)) ;
+
+        String []cPlusPlusExt = {".cpp"} ;
+        languages.add(new LanguageExtensions("C++",cPlusPlusExt)) ;
+
+        String []vsProjectSolution = {".csproj", ".sln"} ;
+        languages.add(new LanguageExtensions("vsProjectSolution(sln,csproj)",vsProjectSolution)) ;
+
+        String []winArtifact = {".dll", ".exe", ".pdb"} ;
+        languages.add(new LanguageExtensions("Windows(exe,dll,pdb)",winArtifact)) ;
+
+        String []rubyExt = {".rb"} ;
+        languages.add(new LanguageExtensions("Ruby",rubyExt)) ;
+
+        String []databaseExt = {".sql"} ;
+        languages.add(new LanguageExtensions("Database(sql)",databaseExt)) ;
+
+        String []pythonExt = {".py"} ;
+        languages.add(new LanguageExtensions("Python",pythonExt)) ;
+
+        String []htmlExt = {".html",".htm"} ;
+        languages.add(new LanguageExtensions("HTML",htmlExt)) ;
+
+        String []docExt = {".md",".txt"} ;
+        languages.add(new LanguageExtensions("Doc(md,txt)",docExt)) ;
+
+        String []dataExt = {".json",".xml"} ;
+        languages.add(new LanguageExtensions("Data(json,xml)",dataExt)) ;
+
+        String []bazelExt = {".bazel",".bzl"} ;
+        languages.add(new LanguageExtensions("Bazel",bazelExt)) ;
+
+        String []shellExt = {".bash",".sh"} ;
+        languages.add(new LanguageExtensions("Shell",shellExt)) ;
+
+        String []imageExt = {".png",".svg",".jpg",".jpeg"} ;
+        languages.add(new LanguageExtensions("Image",imageExt)) ;
+    }
+
+    void initFoldersToExclude()  {
+        excludeFolders.add("node_modules") ;
+        excludeFolders.add("bazel-bin") ;
+        excludeFolders.add("bazel-main") ;
+        excludeFolders.add("bazel-out") ;
+        excludeFolders.add("bazel-testlogs") ;
+        excludeFolders.add("output") ;
+    }
 
     public String getHeader() {
         StringBuilder header ;
@@ -154,12 +228,5 @@ public class ReportOptions {
         } catch (FileNotFoundException e) {
             errorMessage = e.getMessage();
         }
-    }
-    public static ReportOptions processArguments(String[] args) {
-        ReportOptions options = new ReportOptions();
-
-        options.parseArguments(args) ;
-
-        return options ;
     }
 }

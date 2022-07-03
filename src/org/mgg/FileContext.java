@@ -7,29 +7,63 @@ public class FileContext implements ReportableItem, Comparable<FileContext>{
     public boolean isTestFile;
     public String langName ;
 
-    public FileContext(String itemPath) {
+    public FileContext(String itemPath, ReportOptions reportOptions) {
         this.itemPath = itemPath ;
-        artifactName = determineArtifact(itemPath) ;
+        determineArtifact(itemPath, reportOptions) ;
         isService = itemPath.toLowerCase().contains("service") ;
-        isTestFile = (ReportOptions.testLang.isExtensionMatchedBy(itemPath) || ReportOptions.testLang.isContainedBy(itemPath)) ;
+        isTestFile = (reportOptions.testLang.isExtensionMatchedBy(itemPath) || reportOptions.testLang.isContainedBy(itemPath)) ;
+        determineFileLanguage(itemPath, reportOptions);
     }
 
-    public final String determineArtifact(String path) {
+    private void determineFileLanguage(String fileName, ReportOptions reportOptions) {
+        boolean match ;
+        int i = 0 ;
+        int max ;
+
+        langName = "unknown" ;
+        max = reportOptions.languages.size() ;
+
+        do {
+            LanguageExtensions lang = reportOptions.languages.get(i) ;
+            match = lang.isExtensionMatchedBy(fileName) ;
+
+            if(match)
+            {
+                langName = lang.languageName ;
+            }
+            i++  ;
+        } while (!match && (i < max)) ;
+
+        if(reportOptions.showUnknownExtensions && langName.equals("unknown")) {
+            String ext ;
+            int pos = fileName.lastIndexOf('.') ;
+
+            ext = (pos >= 0) ? fileName.substring(pos) : fileName ;
+            langName += "(" + ext + ")" ;
+        }
+    }
+    private void determineArtifact(String path, ReportOptions reportOptions) {
         int pos ;
         String aux ;
 
-        aux = path.substring(ReportOptions.rootFolderPathLength) ;
-        pos = aux.indexOf('/', 1);
+        if(path.equals(reportOptions.rootFolder)) {
+            aux = reportOptions.rootFolder;
+        }
+        else {
+            aux = path.substring(reportOptions.rootFolderPathLength);
+            pos = aux.indexOf('/', 1);
 
-        //The name of the first level folder is used as the base/component/artifact name
-        if (pos >= 0) {
-            aux = aux.substring(1,pos) ;
+            //The name of the first level folder is used as the base/component/artifact name
+            if (pos >= 0) {
+                aux = aux.substring(1, pos);
+            }
+
+            if (aux.startsWith("/")) {
+                aux = aux.substring(1);
+            }
         }
 
-        if(aux.startsWith("/")) {
-            aux = aux.substring(1) ;
-        }
-        return aux ;
+        artifactName = aux ;
     }
 
     public final void setLanguageName(String langName) {
@@ -38,7 +72,7 @@ public class FileContext implements ReportableItem, Comparable<FileContext>{
     public String getLangStats(ReportOptions reportOptions) {
 
         return langName +
-                ReportOptions.columnSeparator +
+                reportOptions.columnSeparator +
                 1;
     }
 
@@ -55,23 +89,23 @@ public class FileContext implements ReportableItem, Comparable<FileContext>{
             String relPath = relativePath(itemPath, reportOptions.rootFolder) ;
 
             if(relPath.length()== 0) {
-                relPath = "ROOT" + ReportOptions.columnSeparator + reportOptions.rootFolder;
+                relPath = "ROOT" + reportOptions.columnSeparator + reportOptions.rootFolder;
                 resp.append(relPath);
             }
             else {
                 resp.append(relPath);
-                resp.append(ReportOptions.columnSeparator).append(artifactName);
+                resp.append(reportOptions.columnSeparator).append(artifactName);
             }
         }
         else {
             resp.append(artifactName) ;
         }
 
-        resp.append(ReportOptions.columnSeparator).append(getNumServices());
-        resp.append(ReportOptions.columnSeparator).append(getNumTestFiles());
-        resp.append(ReportOptions.columnSeparator).append('$'); //subfolders
-        resp.append(ReportOptions.columnSeparator).append(1); //numGiles
-        resp.append(ReportOptions.columnSeparator).append(getLangStats(reportOptions));
+        resp.append(reportOptions.columnSeparator).append(getNumServices());
+        resp.append(reportOptions.columnSeparator).append(getNumTestFiles());
+        resp.append(reportOptions.columnSeparator).append('$'); //subfolders
+        resp.append(reportOptions.columnSeparator).append(1); //numGiles
+        resp.append(reportOptions.columnSeparator).append(getLangStats(reportOptions));
 
         return resp.toString() ;
     }

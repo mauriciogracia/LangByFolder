@@ -8,8 +8,9 @@ public class DirectoryContext extends FileContext {
     private int numTestFiles ;
     private int numServices;
     public final ArrayList<LanguageStats> langStats ;
-    public DirectoryContext(String itemPath) {
-        super(itemPath) ;
+
+    public DirectoryContext(String itemPath, ReportOptions reportOptions) {
+        super(itemPath, reportOptions) ;
         numSubfolders = 0 ;
         numFiles = 0;
         numTestFiles = 0 ;
@@ -51,10 +52,10 @@ public class DirectoryContext extends FileContext {
             LanguageStats dls = langStats.get(i) ;
 
             langStatsStr.append(dls.languageName);
-            langStatsStr.append(ReportOptions.columnSeparator).append(dls.getNumFiles());
+            langStatsStr.append(reportOptions.columnSeparator).append(dls.getNumFiles());
 
             if(i + 1 != max) {
-                langStatsStr.append(ReportOptions.columnSeparator);
+                langStatsStr.append(reportOptions.columnSeparator);
             }
         }
 
@@ -96,25 +97,23 @@ public class DirectoryContext extends FileContext {
             relPath = relativePath(itemPath, reportOptions.rootFolder) ;
 
             if(relPath.length()== 0) {
-                relPath = reportOptions.rootFolder + ReportOptions.columnSeparator + "ROOT" ;
+                relPath = reportOptions.rootFolder + reportOptions.columnSeparator + "ROOT" ;
                 resp.append(relPath);
             }
             else {
                 resp.append(relPath);
-                resp.append(ReportOptions.columnSeparator).append(artifactName);
+                resp.append(reportOptions.columnSeparator).append(artifactName);
             }
-
-
         }
         else {
             resp.append(artifactName) ;
         }
 
-        resp.append(ReportOptions.columnSeparator).append(numServices);
-        resp.append(ReportOptions.columnSeparator).append(numTestFiles);
-        resp.append(ReportOptions.columnSeparator).append(numSubfolders);
-        resp.append(ReportOptions.columnSeparator).append(getNumFiles());
-        resp.append(ReportOptions.columnSeparator).append(getLangStats(reportOptions));
+        resp.append(reportOptions.columnSeparator).append(numServices);
+        resp.append(reportOptions.columnSeparator).append(numTestFiles);
+        resp.append(reportOptions.columnSeparator).append(numSubfolders);
+        resp.append(reportOptions.columnSeparator).append(getNumFiles());
+        resp.append(reportOptions.columnSeparator).append(getLangStats(reportOptions));
 
         return resp.toString() ;
     }
