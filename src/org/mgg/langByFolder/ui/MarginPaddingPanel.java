@@ -7,6 +7,7 @@ public class MarginPaddingPanel extends JPanel{
     JPanel margin ;
     JPanel content;
 
+    //@todo: switch to JavaFX - table view example https://jenkov.com/tutorials/javafx/tableview.html
     /**
      * This is a JPanel that has margin, padding and a border color
      * @param borderColor to be used
