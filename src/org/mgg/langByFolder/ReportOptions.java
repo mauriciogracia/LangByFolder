@@ -1,4 +1,4 @@
-package org.mgg;
+package org.mgg.langByFolder;
 
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
@@ -48,6 +48,9 @@ public class ReportOptions {
         rootFolderPathLength = rootFolder.length();
     }
 
+    public boolean isExcludedFolder(String folderName) {
+        return excludeFolders.contains(folderName) ;
+    }
     void initLanguageExtensions() {
         languages = new ArrayList<>() ;
 

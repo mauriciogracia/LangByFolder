@@ -1,4 +1,4 @@
-package org.mgg;
+package org.mgg.langByFolder;
 
 public enum ReportDetailLevel {
     CUSTOM, //Try to determine and show only software artifacts

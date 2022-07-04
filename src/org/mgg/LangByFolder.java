@@ -1,5 +1,10 @@
 package org.mgg;
 
+import org.mgg.langByFolder.DirectoryContext;
+import org.mgg.langByFolder.FileContext;
+import org.mgg.langByFolder.ReportDetailLevel;
+import org.mgg.langByFolder.ReportOptions;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.Files;
@@ -8,7 +13,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import static org.mgg.ReportOptions.usageOptions;
+import static org.mgg.langByFolder.ReportOptions.usageOptions;
 
 public class LangByFolder {
     private final static ArrayList<FileContext> items = new ArrayList<>();
@@ -103,7 +108,7 @@ public class LangByFolder {
     private static void processFolder(DirectoryContext dirContext, String itemName, ReportOptions reportOptions) {
         String subDirPath ;
 
-        if(!reportOptions.excludeFolders.contains(itemName)) {
+        if(!reportOptions.isExcludedFolder(itemName)) {
             subDirPath = dirContext.itemPath + "/" + itemName ;
             DirectoryContext dlSub = new DirectoryContext(subDirPath, reportOptions);
 

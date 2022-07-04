@@ -1,4 +1,4 @@
-package org.mgg;
+package org.mgg.langByFolder;
 
 public class LanguageStats implements Comparable<LanguageStats>{
     public String languageName;

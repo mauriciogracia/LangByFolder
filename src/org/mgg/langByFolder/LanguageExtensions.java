@@ -1,4 +1,4 @@
-package org.mgg;
+package org.mgg.langByFolder;
 
 public class LanguageExtensions {
     public String languageName ;

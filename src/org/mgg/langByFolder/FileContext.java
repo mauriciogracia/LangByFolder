@@ -1,4 +1,4 @@
-package org.mgg;
+package org.mgg.langByFolder;
 
 public class FileContext implements ReportableItem, Comparable<FileContext>{
     public String itemPath ;
