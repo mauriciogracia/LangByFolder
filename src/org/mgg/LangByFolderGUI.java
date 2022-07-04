@@ -1,24 +1,33 @@
 package org.mgg;
 
+import javafx.application.Application;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
 import org.mgg.langByFolder.ui.FolderSelect;
 
-import javax.swing.*;
-import java.awt.*;
-
-public class LangByFolderGUI {
+public class LangByFolderGUI extends Application {
     public static void main(String[] args) {
-        JFrame frame ;
-        JPanel panel ;
+        Application.launch(args);
+    }
 
-        panel = new JPanel();
-        panel.setLayout(new BorderLayout());
-        panel.add(new FolderSelect(),BorderLayout.PAGE_START) ;
+    @Override public void start(Stage stage) {
+        Text text = new Text(10, 40, "Hello World!");
+        text.setFont(new Font(40));
 
-        frame = new JFrame("LangByFolder") ;
-        frame.add(panel) ;
-        frame.setSize(400, 600);
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.setVisible(true);
+        BorderPane borderPane = new BorderPane();
+        Scene scene = new Scene(borderPane) ;
+        borderPane.setTop(new FolderSelect());
+        //@todo: continue here
+        borderPane.setCenter(new FolderSelect());
+        borderPane.setBottom(new FolderSelect());
 
+        stage.setTitle("LangByFolder");
+        stage.setScene(scene);
+        stage.sizeToScene();
+        stage.show();
     }
 }
