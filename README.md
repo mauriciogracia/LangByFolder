@@ -21,3 +21,20 @@ If you want to test the current status
 2. will have to clone/download the source code 
 3. go to the `src` folder and run `javac org/mgg/LangByFolder.java`
 4. run `java org.mgg.LangByFolder` to see the parameters that you can pass 
+
+```
+LangByFolder <path> <options> <outFile.csv>
+	<options>:
+		-a: show all files
+		-f: show only folders (default)
+		-c: show custom artifact
+
+		-h: show hidden files/folders
+
+		-u: show unknown extensions
+
+		-o: order stats by language occurrence (default)
+		-n: order stats by language name
+
+	Example: $java org.mgg.LangByFolder /your/path -fhu output.txt
+  ```
