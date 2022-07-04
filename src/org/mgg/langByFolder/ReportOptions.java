@@ -43,9 +43,12 @@ public class ReportOptions {
 
     public ReportOptions(String args[]) {
         parseArguments(args);
-        initLanguageExtensions();
-        initFoldersToExclude();
-        rootFolderPathLength = rootFolder.length();
+
+        if(validArguments) {
+            initLanguageExtensions();
+            initFoldersToExclude();
+            rootFolderPathLength = rootFolder.length();
+        }
     }
 
     public boolean isExcludedFolder(String folderName) {
