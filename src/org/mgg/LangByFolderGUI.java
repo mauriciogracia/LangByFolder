@@ -1,13 +1,13 @@
 package org.mgg;
 
 import javafx.application.Application;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import org.mgg.langByFolder.ui.FolderSelect;
+import org.mgg.langByFolder.ui.FolderSelectPane;
+import org.mgg.langByFolder.ui.TopPane;
 
 public class LangByFolderGUI extends Application {
     public static void main(String[] args) {
@@ -20,10 +20,7 @@ public class LangByFolderGUI extends Application {
 
         BorderPane borderPane = new BorderPane();
         Scene scene = new Scene(borderPane) ;
-        borderPane.setTop(new FolderSelect());
-        //@todo: continue here
-        borderPane.setCenter(new FolderSelect());
-        borderPane.setBottom(new FolderSelect());
+        borderPane.setTop(new TopPane());
 
         stage.setTitle("LangByFolder");
         stage.setScene(scene);

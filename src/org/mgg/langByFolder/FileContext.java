@@ -46,11 +46,11 @@ public class FileContext implements ReportableItem, Comparable<FileContext>{
         int pos ;
         String aux ;
 
-        if(path.equals(reportOptions.rootFolder)) {
-            aux = reportOptions.rootFolder;
+        if(path.equals(reportOptions.getRootFolder())) {
+            aux = reportOptions.getRootFolder();
         }
         else {
-            aux = path.substring(reportOptions.rootFolderPathLength);
+            aux = path.substring(reportOptions.getRootFolderPathLength());
             pos = aux.indexOf('/', 1);
 
             //The name of the first level folder is used as the base/component/artifact name
@@ -86,10 +86,10 @@ public class FileContext implements ReportableItem, Comparable<FileContext>{
         resp = new StringBuilder() ;
 
         if(reportOptions.reportDetailLevel != ReportDetailLevel.CUSTOM) {
-            String relPath = relativePath(itemPath, reportOptions.rootFolder) ;
+            String relPath = relativePath(itemPath, reportOptions.getRootFolder()) ;
 
             if(relPath.length()== 0) {
-                relPath = "ROOT" + reportOptions.columnSeparator + reportOptions.rootFolder;
+                relPath = "ROOT" + reportOptions.columnSeparator + reportOptions.getRootFolder();
                 resp.append(relPath);
             }
             else {

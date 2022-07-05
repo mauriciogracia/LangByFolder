@@ -33,8 +33,8 @@ public class LangByFolder {
         }
     }
     public static void processRootFolder(ReportOptions reportOptions) {
-        if(Files.exists(Paths.get(reportOptions.rootFolder))) {
-            DirectoryContext dc = new DirectoryContext(reportOptions.rootFolder, reportOptions);
+        if(Files.exists(Paths.get(reportOptions.getRootFolder()))) {
+            DirectoryContext dc = new DirectoryContext(reportOptions.getRootFolder(), reportOptions);
             iterateFolder(dc, reportOptions);
 
             Collections.sort(items);
@@ -42,7 +42,7 @@ public class LangByFolder {
             showResults(reportOptions);
         }
         else {
-            System.err.println("Path does not exist:" + reportOptions.rootFolder);
+            System.err.println("Path does not exist:" + reportOptions.getRootFolder());
         }
     }
 

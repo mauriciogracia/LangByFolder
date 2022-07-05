@@ -94,10 +94,10 @@ public class DirectoryContext extends FileContext {
         resp = new StringBuilder() ;
 
         if(reportOptions.reportDetailLevel != ReportDetailLevel.CUSTOM) {
-            relPath = relativePath(itemPath, reportOptions.rootFolder) ;
+            relPath = relativePath(itemPath, reportOptions.getRootFolder()) ;
 
             if(relPath.length()== 0) {
-                relPath = reportOptions.rootFolder + reportOptions.columnSeparator + "ROOT" ;
+                relPath = reportOptions.getRootFolder() + reportOptions.columnSeparator + "ROOT" ;
                 resp.append(relPath);
             }
             else {

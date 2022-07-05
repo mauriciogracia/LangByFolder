@@ -12,17 +12,15 @@ public class ReportOptions {
     final LanguageExtensions testLang = new LanguageExtensions("TestFiles",testExt) ;
     final ArrayList<String> excludeFolders = new ArrayList<>();
     public String columnSeparator = ";";
-    int rootFolderPathLength;
+    private int rootFolderPathLength;
     public ArrayList<LanguageExtensions> languages  ;
     public boolean validArguments ;
     public String errorMessage ;
-    public String rootFolder ;
+    private String rootFolder ;
     public boolean showHiddenItems  ;
     public boolean showUnknownExtensions  ;
     public ReportDetailLevel reportDetailLevel = ReportDetailLevel.ALL_ITEMS ;
-
     public PrintStream output ;
-
     public Comparator<LanguageStats>  langStatComparator ;
     private final static List<String> validOptions = Arrays.asList("a","f","c","h","u","o","n");
 
@@ -41,14 +39,19 @@ public class ReportOptions {
                 "\n\t\t-n: order stats by language name" +
                 "\n\n\tExample: $java org.mgg.LangByFolder /your/path -fhu output.txt" ;
 
-    public ReportOptions(String args[]) {
+    public ReportOptions(String[] args) {
         parseArguments(args);
 
         if(validArguments) {
             initLanguageExtensions();
             initFoldersToExclude();
-            rootFolderPathLength = rootFolder.length();
         }
+    }
+
+    public ReportOptions() {
+        setDefaultReportOptions() ;
+        initLanguageExtensions();
+        initFoldersToExclude();
     }
 
     public boolean isExcludedFolder(String folderName) {
@@ -150,7 +153,7 @@ public class ReportOptions {
 
         if((numArgs >= 1) && (numArgs <=  3))
         {
-            rootFolder = args[0] ;
+            setRootFolder(args[0]) ;
             output = System.out ;
 
             validArguments = parseOptions(args);
@@ -234,5 +237,18 @@ public class ReportOptions {
         } catch (FileNotFoundException e) {
             errorMessage = e.getMessage();
         }
+    }
+
+    public String getRootFolder() {
+        return rootFolder;
+    }
+
+    public void setRootFolder(String rootFolder) {
+        this.rootFolder = rootFolder;
+        this.rootFolderPathLength = rootFolder.length();
+    }
+
+    public int getRootFolderPathLength() {
+        return rootFolderPathLength;
     }
 }
