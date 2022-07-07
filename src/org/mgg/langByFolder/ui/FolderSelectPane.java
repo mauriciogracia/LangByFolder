@@ -6,16 +6,20 @@ import javafx.scene.layout.*;
 import javafx.scene.control.TextField ;
 
 public class FolderSelectPane extends BorderPane {
+    Button btnSelectFolder ;
 
     public FolderSelectPane() {
         super() ;
+
+        btnSelectFolder = new Button("...") ;
+
         BorderPane content = new BorderPane();
         content.setPadding(GraphicSettings.borderPadding);
 
         content.setBorder(new Border(new BorderStroke(GraphicSettings.borderColor, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(2))));
         content.setTop(new Label("Folder to check...")) ;
         content.setCenter(new TextField("path/to/folder/to/scan")) ;
-        content.setRight(new Button("..."));
+        content.setRight(btnSelectFolder);
         this.setPadding(GraphicSettings.borderMargin);
         this.setCenter(content) ;
     }
