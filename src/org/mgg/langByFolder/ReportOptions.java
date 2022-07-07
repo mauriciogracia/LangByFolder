@@ -2,10 +2,7 @@ package org.mgg.langByFolder;
 
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class ReportOptions {
     private final static String[] testExt = {"spec.ts","spec.py","spec.scala","test"} ;
@@ -122,21 +119,19 @@ public class ReportOptions {
     }
 
     public String getHeader() {
-        StringBuilder header ;
-
-        header = new StringBuilder() ;
+        StringJoiner joiner = new StringJoiner(columnSeparator) ;
 
         if(reportDetailLevel != ReportDetailLevel.CUSTOM) {
-            header.append("Folder").append(columnSeparator);
+            joiner.add("Folder");
         }
-        header.append("Artifact").append(columnSeparator);
-        header.append("isService").append(columnSeparator);
-        header.append("numTestFiles").append(columnSeparator);
-        header.append("# Subfolders").append(columnSeparator);
-        header.append("# Total Files").append(columnSeparator);
-        header.append("Languages").append(columnSeparator);
+        joiner.add("Artifact");
+        joiner.add("isService");
+        joiner.add("numTestFiles");
+        joiner.add("# Subfolders");
+        joiner.add("# Total Files");
+        joiner.add("Languages");
 
-        return header.toString() ;
+        return joiner.toString() ;
     }
 
     private void setDefaultReportOptions() {
