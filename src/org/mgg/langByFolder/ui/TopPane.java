@@ -1,9 +1,6 @@
 package org.mgg.langByFolder.ui;
 
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.*;
+import javafx.scene.layout.BorderPane;
 
 public class TopPane extends BorderPane {
 
@@ -12,6 +9,7 @@ public class TopPane extends BorderPane {
         BorderPane content = new BorderPane();
         content.setTop(new FolderSelectPane()) ;
         content.setCenter(new ReportOptionsPane()) ;
+        content.setBottom(new ProcessExportPane());
         this.setCenter(content) ;
     }
 }
