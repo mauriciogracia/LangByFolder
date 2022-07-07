@@ -1,6 +1,7 @@
 package org.mgg.langByFolder;
 
 import java.util.ArrayList;
+import java.util.StringJoiner;
 
 public class DirectoryContext extends FileContext {
     private int numSubfolders;
@@ -88,34 +89,34 @@ public class DirectoryContext extends FileContext {
     }
 
     public String toString(ReportOptions reportOptions) {
-        StringBuilder resp ;
+        StringJoiner joiner ;
         String relPath ;
 
-        resp = new StringBuilder() ;
+        joiner = new StringJoiner(reportOptions.columnSeparator);
 
         if(reportOptions.reportDetailLevel != ReportDetailLevel.CUSTOM) {
             relPath = relativePath(itemPath, reportOptions.getRootFolder()) ;
 
             if(relPath.length()== 0) {
                 relPath = reportOptions.getRootFolder() + reportOptions.columnSeparator + "ROOT" ;
-                resp.append(relPath);
+                joiner.add(relPath);
             }
             else {
-                resp.append(relPath);
-                resp.append(reportOptions.columnSeparator).append(artifactName);
+                joiner.add(relPath);
+                joiner.add(artifactName);
             }
         }
         else {
-            resp.append(artifactName) ;
+            joiner.add(artifactName) ;
         }
 
-        resp.append(reportOptions.columnSeparator).append(numServices);
-        resp.append(reportOptions.columnSeparator).append(numTestFiles);
-        resp.append(reportOptions.columnSeparator).append(numSubfolders);
-        resp.append(reportOptions.columnSeparator).append(getNumFiles());
-        resp.append(reportOptions.columnSeparator).append(getLangStats(reportOptions));
+        joiner.add("" + numServices);
+        joiner.add("" + numTestFiles);
+        joiner.add("" + numSubfolders);
+        joiner.add("" + getNumFiles());
+        joiner.add(getLangStats(reportOptions));
 
-        return resp.toString() ;
+        return joiner.toString() ;
     }
 
     public int getNumFiles() {
