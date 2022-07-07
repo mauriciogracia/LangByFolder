@@ -15,6 +15,10 @@ public class FileContext implements ReportableItem, Comparable<FileContext>{
         determineFileLanguage(itemPath, reportOptions);
     }
 
+    public String getItemPath() {
+        return itemPath ;
+    }
+
     private void determineFileLanguage(String fileName, ReportOptions reportOptions) {
         boolean match ;
         int i = 0 ;
@@ -85,6 +89,7 @@ public class FileContext implements ReportableItem, Comparable<FileContext>{
 
         resp = new StringBuilder() ;
 
+        //@todo: using StringJoiner here
         if(reportOptions.reportDetailLevel != ReportDetailLevel.CUSTOM) {
             String relPath = relativePath(itemPath, reportOptions.getRootFolder()) ;
 
