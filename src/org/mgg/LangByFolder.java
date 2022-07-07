@@ -71,7 +71,7 @@ public class LangByFolder {
                     childName = folderItem.getName();
                     childPathStr = dirContext.itemPath + "/" + childName ;
 
-                    if (reportOptions.showHiddenItems || (!folderItem.isHidden() && !childName.startsWith("/."))) {
+                    if (reportOptions.showHiddenItems || (!folderItem.isHidden() && !childName.startsWith("."))) {
                         itemAttributes = Files.readAttributes(folderItem.toPath(), BasicFileAttributes.class);
 
                         if (itemAttributes.isDirectory()) {
