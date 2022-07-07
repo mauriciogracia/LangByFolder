@@ -10,12 +10,13 @@ public class ReportOptionsPane extends BorderPane {
     RadioButton radioFoldersOnly ;
     RadioButton radioAllItems ;
     RadioButton radioArtifactsOnly  ;
-
-    CheckBox cb1  ;
-
-    CheckBox cb2  ;
+    CheckBox cbShowHiddenFilesFolder  ;
+    CheckBox cbShowUnknownExtensions  ;
+    RadioButton radioStatsOrderByOccurrence  ;
+    RadioButton radioStatsOrderByName  ;
     public ReportOptionsPane() {
         super() ;
+        int row ;
         reportOptions = new ReportOptions() ;
 
         GridPane content = new GridPane();
@@ -31,9 +32,36 @@ public class ReportOptionsPane extends BorderPane {
         radioAllItems.setToggleGroup(tg);
         radioArtifactsOnly.setToggleGroup(tg);
 
-        content.add(radioFoldersOnly,0,0);
-        content.add(radioAllItems,1,0);
-        content.add(radioArtifactsOnly,2,0);
+        //1st row - label for options
+        row = 0 ;
+        content.add(new Label("Show options"),0,row);
+
+        //2nd row
+        row++;
+        content.add(radioFoldersOnly,0,row);
+        content.add(radioAllItems,1,row);
+        content.add(radioArtifactsOnly,2,row);
+
+        cbShowHiddenFilesFolder = new CheckBox("Hidden files/folder") ;
+        cbShowUnknownExtensions = new CheckBox("Unknown extensions") ;
+
+        //3rd row
+        row++ ;
+        content.add(cbShowHiddenFilesFolder,0,2);
+        content.add(cbShowUnknownExtensions,1,2);
+
+        //4th row
+        ToggleGroup tg2 = new ToggleGroup();
+        radioStatsOrderByOccurrence = new RadioButton("Order stats by occurrence") ;
+        radioStatsOrderByName = new RadioButton("Order stats by name") ;
+
+        radioStatsOrderByOccurrence.setToggleGroup(tg2);
+        radioStatsOrderByName.setToggleGroup(tg2);
+
+        row++;
+        content.add(radioStatsOrderByOccurrence,0,row);
+        content.add(radioStatsOrderByName,1,row);
+
         this.setPadding(GraphicSettings.borderMargin);
         this.setCenter(content) ;
 
