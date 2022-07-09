@@ -1,11 +1,13 @@
 package org.mgg.langByFolder.ui;
 
+import javafx.event.EventHandler;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import org.mgg.langByFolder.ReportDetailLevel;
 import org.mgg.langByFolder.ReportOptions;
 
-public class ReportOptionsPane extends BorderPane {
+public class ReportOptionsPane extends BorderPane implements EventHandler<MouseEvent> {
     private final ReportOptions reportOptions ;
     RadioButton radioFoldersOnly ;
     RadioButton radioAllItems ;
@@ -14,7 +16,7 @@ public class ReportOptionsPane extends BorderPane {
     CheckBox cbShowUnknownExtensions  ;
     RadioButton radioStatsOrderByOccurrence  ;
     RadioButton radioStatsOrderByName  ;
-    public ReportOptionsPane(ReportOptions rep) {
+    public ReportOptionsPane(ReportOptions rep)  {
         super() ;
         reportOptions = rep ;
 
@@ -25,8 +27,13 @@ public class ReportOptionsPane extends BorderPane {
         content.setBorder(new Border(new BorderStroke(GraphicSettings.borderColor, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(2))));
         ToggleGroup tg = new ToggleGroup();
         radioFoldersOnly = new RadioButton("Folders only") ;
+        radioFoldersOnly.addEventFilter(MouseEvent.MOUSE_CLICKED, this);
+
         radioAllItems = new RadioButton("All Items") ;
+        radioAllItems.addEventFilter(MouseEvent.MOUSE_CLICKED, this);
+
         radioArtifactsOnly = new RadioButton("Artifacts only") ;
+        radioArtifactsOnly.addEventFilter(MouseEvent.MOUSE_CLICKED, this);
 
         radioFoldersOnly.setToggleGroup(tg);
         radioAllItems.setToggleGroup(tg);
@@ -74,4 +81,17 @@ public class ReportOptionsPane extends BorderPane {
         }
     }
 
+
+    @Override
+    public void handle(MouseEvent event) {
+        Object srcComponent =event.getSource() ;
+
+        if(srcComponent.equals(radioFoldersOnly)) {
+            reportOptions.reportDetailLevel = ReportDetailLevel.FOLDER ;
+        } else if(srcComponent.equals(radioAllItems)) {
+            reportOptions.reportDetailLevel = ReportDetailLevel.ALL_ITEMS ;
+        } else if(srcComponent.equals(radioArtifactsOnly)) {
+            reportOptions.reportDetailLevel = ReportDetailLevel.CUSTOM ;
+        }
+    }
 }

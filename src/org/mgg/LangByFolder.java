@@ -9,13 +9,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
 import java.util.Collections;
 
 import static org.mgg.langByFolder.ReportOptions.usageOptions;
 
 public class LangByFolder {
-    private final static ArrayList<String> artifacts = new ArrayList<>();
 
     public static void main(String[] args) {
         ReportOptions reportOptions ;
@@ -33,6 +31,7 @@ public class LangByFolder {
         }
     }
     public static void processRootFolder(ReportOptions reportOptions) {
+        reportOptions.clear();
         DirectoryContext dc = new DirectoryContext(reportOptions.getRootFolder(), reportOptions);
         iterateFolder(dc, reportOptions);
     }
@@ -103,8 +102,8 @@ public class LangByFolder {
             subDirPath = dirContext.getItemPath() + "/" + itemName ;
             DirectoryContext dlSub = new DirectoryContext(subDirPath, reportOptions);
 
-            if((reportOptions.reportDetailLevel == ReportDetailLevel.CUSTOM) && !artifacts.contains(dlSub.artifactName)) {
-                artifacts.add(dlSub.artifactName);
+            if((reportOptions.reportDetailLevel == ReportDetailLevel.CUSTOM) && !reportOptions.artifacts.contains(dlSub.artifactName)) {
+                reportOptions.artifacts.add(dlSub.artifactName);
                 reportOptions.items.add(dlSub);
             }
             else if((reportOptions.reportDetailLevel != ReportDetailLevel.CUSTOM)) {

@@ -8,12 +8,13 @@ import java.util.*;
 
 public class ReportOptions {
     private final static String[] testExt = {"spec.ts","spec.py","spec.scala","test"} ;
+    public final ArrayList<String> artifacts = new ArrayList<>();
     public ArrayList<FileContext> items = new ArrayList<>();
     final LanguageExtensions testLang = new LanguageExtensions("TestFiles",testExt) ;
     final ArrayList<String> excludeFolders = new ArrayList<>();
     public String columnSeparator = ";";
     private int rootFolderPathLength;
-    public ArrayList<LanguageExtensions> languages  ;
+    public static ArrayList<LanguageExtensions> supportedLanguageExt;
     public boolean validArguments ;
     public String errorMessage ;
     private String rootFolder ;
@@ -62,58 +63,58 @@ public class ReportOptions {
         return excludeFolders.contains(folderName) ;
     }
     void initLanguageExtensions() {
-        languages = new ArrayList<>() ;
+        supportedLanguageExt = new ArrayList<>() ;
 
         String []tsExt = {".ts"} ;
-        languages.add(new LanguageExtensions("Typescript",tsExt)) ;
+        supportedLanguageExt.add(new LanguageExtensions("Typescript",tsExt)) ;
 
         String []scalaExt = {".scala"} ;
-        languages.add(new LanguageExtensions("Scala",scalaExt)) ;
+        supportedLanguageExt.add(new LanguageExtensions("Scala",scalaExt)) ;
 
         String []javaExt = {".java",".jar","war"} ;
-        languages.add(new LanguageExtensions("Java",javaExt)) ;
+        supportedLanguageExt.add(new LanguageExtensions("Java",javaExt)) ;
 
         String []jsExt = {".js"} ;
-        languages.add(new LanguageExtensions("Javascript",jsExt)) ;
+        supportedLanguageExt.add(new LanguageExtensions("Javascript",jsExt)) ;
 
         String []cSharpExt = {".cs"} ;
-        languages.add(new LanguageExtensions("C#",cSharpExt)) ;
+        supportedLanguageExt.add(new LanguageExtensions("C#",cSharpExt)) ;
 
         String []cPlusPlusExt = {".cpp"} ;
-        languages.add(new LanguageExtensions("C++",cPlusPlusExt)) ;
+        supportedLanguageExt.add(new LanguageExtensions("C++",cPlusPlusExt)) ;
 
         String []vsProjectSolution = {".csproj", ".sln"} ;
-        languages.add(new LanguageExtensions("vsProjectSolution(sln,csproj)",vsProjectSolution)) ;
+        supportedLanguageExt.add(new LanguageExtensions("vsProjectSolution(sln,csproj)",vsProjectSolution)) ;
 
         String []winArtifact = {".dll", ".exe", ".pdb"} ;
-        languages.add(new LanguageExtensions("Windows(exe,dll,pdb)",winArtifact)) ;
+        supportedLanguageExt.add(new LanguageExtensions("Windows(exe,dll,pdb)",winArtifact)) ;
 
         String []rubyExt = {".rb"} ;
-        languages.add(new LanguageExtensions("Ruby",rubyExt)) ;
+        supportedLanguageExt.add(new LanguageExtensions("Ruby",rubyExt)) ;
 
         String []databaseExt = {".sql"} ;
-        languages.add(new LanguageExtensions("Database(sql)",databaseExt)) ;
+        supportedLanguageExt.add(new LanguageExtensions("Database(sql)",databaseExt)) ;
 
         String []pythonExt = {".py"} ;
-        languages.add(new LanguageExtensions("Python",pythonExt)) ;
+        supportedLanguageExt.add(new LanguageExtensions("Python",pythonExt)) ;
 
         String []htmlExt = {".html",".htm"} ;
-        languages.add(new LanguageExtensions("HTML",htmlExt)) ;
+        supportedLanguageExt.add(new LanguageExtensions("HTML",htmlExt)) ;
 
         String []docExt = {".md",".txt"} ;
-        languages.add(new LanguageExtensions("Doc(md,txt)",docExt)) ;
+        supportedLanguageExt.add(new LanguageExtensions("Doc(md,txt)",docExt)) ;
 
         String []dataExt = {".json",".xml"} ;
-        languages.add(new LanguageExtensions("Data(json,xml)",dataExt)) ;
+        supportedLanguageExt.add(new LanguageExtensions("Data(json,xml)",dataExt)) ;
 
         String []bazelExt = {".bazel",".bzl"} ;
-        languages.add(new LanguageExtensions("Bazel",bazelExt)) ;
+        supportedLanguageExt.add(new LanguageExtensions("Bazel",bazelExt)) ;
 
         String []shellExt = {".bash",".sh"} ;
-        languages.add(new LanguageExtensions("Shell",shellExt)) ;
+        supportedLanguageExt.add(new LanguageExtensions("Shell",shellExt)) ;
 
         String []imageExt = {".png",".svg",".jpg",".jpeg"} ;
-        languages.add(new LanguageExtensions("Image",imageExt)) ;
+        supportedLanguageExt.add(new LanguageExtensions("Image",imageExt)) ;
     }
 
     void initFoldersToExclude()  {
@@ -249,5 +250,10 @@ public class ReportOptions {
 
     public int getRootFolderPathLength() {
         return rootFolderPathLength;
+    }
+
+    public void clear() {
+        items.clear();
+        artifacts.clear();
     }
 }

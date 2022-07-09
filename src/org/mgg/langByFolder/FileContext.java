@@ -30,10 +30,10 @@ public class FileContext implements IReportableItem, Comparable<FileContext>{
         int max ;
 
         langName = "unknown" ;
-        max = reportOptions.languages.size() ;
+        max = ReportOptions.supportedLanguageExt.size() ;
 
         do {
-            LanguageExtensions lang = reportOptions.languages.get(i) ;
+            LanguageExtensions lang = ReportOptions.supportedLanguageExt.get(i) ;
             match = lang.isExtensionMatchedBy(fileName) ;
 
             if(match)
