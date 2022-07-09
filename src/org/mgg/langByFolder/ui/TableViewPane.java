@@ -7,16 +7,15 @@ import javafx.scene.layout.*;
 import org.mgg.langByFolder.FileContext;
 import org.mgg.langByFolder.ReportOptions;
 
-public class TableViewPane extends BorderPane {
+public class TableViewPane extends BorderPane implements IReportEventsListener{
     ReportOptions rep ;
     TableView <FileContext>tableView ;
 
     // https://jenkov.com/tutorials/javafx/tableview.html
 
-    public TableViewPane() {
+    public TableViewPane(ReportOptions rep) {
         super() ;
-
-        rep = new ReportOptions() ;
+        this.rep = rep ;
         tableView = new TableView<>();
 
         //@todo: getHeader method should be used here
@@ -37,8 +36,6 @@ public class TableViewPane extends BorderPane {
         tableView.getColumns().add(column1);
         tableView.getColumns().add(column2);
 
-        this.addData();
-
         VBox content = new VBox(tableView);
 
         content.setBorder(new Border(new BorderStroke(GraphicSettings.borderColor, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(2))));
@@ -46,11 +43,15 @@ public class TableViewPane extends BorderPane {
         this.setCenter(content) ;
     }
 
-    public void addData() {
-        tableView.getItems().add(
-                new FileContext("John", rep));
-        tableView.getItems().add(
-                new FileContext("Jane", rep));
+    @Override
+    public void started() {
 
+    }
+
+    @Override
+    public void finished() {
+        for(FileContext fc : rep.items ) {
+            tableView.getItems().add(fc);
+        }
     }
 }

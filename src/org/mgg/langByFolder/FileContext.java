@@ -1,6 +1,6 @@
 package org.mgg.langByFolder;
 
-public class FileContext implements ReportableItem, Comparable<FileContext>{
+public class FileContext implements IReportableItem, Comparable<FileContext>{
     public String itemPath ;
     public String artifactName;
     public boolean isService;

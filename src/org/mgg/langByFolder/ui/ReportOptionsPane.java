@@ -6,7 +6,7 @@ import org.mgg.langByFolder.ReportDetailLevel;
 import org.mgg.langByFolder.ReportOptions;
 
 public class ReportOptionsPane extends BorderPane {
-    private ReportOptions reportOptions ;
+    private final ReportOptions reportOptions ;
     RadioButton radioFoldersOnly ;
     RadioButton radioAllItems ;
     RadioButton radioArtifactsOnly  ;
@@ -14,11 +14,11 @@ public class ReportOptionsPane extends BorderPane {
     CheckBox cbShowUnknownExtensions  ;
     RadioButton radioStatsOrderByOccurrence  ;
     RadioButton radioStatsOrderByName  ;
-    public ReportOptionsPane() {
+    public ReportOptionsPane(ReportOptions rep) {
         super() ;
-        int row ;
-        reportOptions = new ReportOptions() ;
+        reportOptions = rep ;
 
+        int row ;
         GridPane content = new GridPane();
         content.setPadding(GraphicSettings.borderPadding);
 

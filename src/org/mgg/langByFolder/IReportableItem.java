@@ -1,5 +1,5 @@
 package org.mgg.langByFolder;
 
-public interface ReportableItem {
+public interface IReportableItem {
     String toString(ReportOptions reportOptions);
 }

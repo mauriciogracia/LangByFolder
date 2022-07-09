@@ -6,6 +6,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import org.mgg.langByFolder.ReportOptions;
 import org.mgg.langByFolder.ui.TableViewPane;
 import org.mgg.langByFolder.ui.TopPane;
 
@@ -20,8 +21,11 @@ public class LangByFolderGUI extends Application {
 
         BorderPane borderPane = new BorderPane();
         Scene scene = new Scene(borderPane) ;
-        borderPane.setTop(new TopPane());
-        borderPane.setCenter(new TableViewPane());
+
+        ReportOptions rep = new ReportOptions() ;
+        TableViewPane tvp = new TableViewPane(rep) ;
+        borderPane.setTop(new TopPane(tvp,rep));
+        borderPane.setCenter(tvp);
 
         stage.setTitle("LangByFolder");
         stage.setScene(scene);
