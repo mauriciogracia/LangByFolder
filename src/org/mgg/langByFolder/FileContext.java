@@ -3,13 +3,14 @@ package org.mgg.langByFolder;
 import java.io.File;
 
 public class FileContext implements IReportableItem, Comparable<FileContext>{
-    public String itemPath ;
+    private final String itemPath ;
     public String artifactName;
     public boolean isService;
     public boolean isTestFile;
     public String langName ;
 
     String[] parts = new String[8] ;
+    private final static String[] propertyByColumn = {"itemType","itemPath","ArtifactName","itemPath","itemPath","itemPath","itemPath","itemPath"};
 
     public FileContext(String itemPath, ReportOptions reportOptions) {
         this.itemPath = itemPath ;
@@ -17,6 +18,10 @@ public class FileContext implements IReportableItem, Comparable<FileContext>{
         isService = itemPath.toLowerCase().contains("service") ;
         isTestFile = (reportOptions.testLang.isExtensionMatchedBy(itemPath) || reportOptions.testLang.isContainedBy(itemPath)) ;
         determineFileLanguage(itemPath, reportOptions);
+    }
+
+    public static String getPropertyNameForColumn(int col) {
+        return propertyByColumn[col]  ;
     }
 
     private void determineFileLanguage(String fileName, ReportOptions reportOptions) {
@@ -85,7 +90,6 @@ public class FileContext implements IReportableItem, Comparable<FileContext>{
         return this.parts[index] ;
     }
 
-
     private String rootArtifact(ReportOptions reportOptions) {
         String rf = reportOptions.getRootFolder() ;
 
@@ -95,7 +99,7 @@ public class FileContext implements IReportableItem, Comparable<FileContext>{
     public final int preparePartsPathArtifact(ReportOptions reportOptions) {
         int i = 0;
 
-        parts[i++] = itemType() ;
+        parts[i++] = getItemType() ;
         String relPath = relativePath(itemPath, reportOptions.getRootFolder()) ;
 
         if(relPath.length()== 0) {
@@ -124,10 +128,14 @@ public class FileContext implements IReportableItem, Comparable<FileContext>{
         return String.join(reportOptions.columnSeparator, parts) ;
     }
 
-    public String itemType() {
+    // Some of this get methods are being used by reflection in the TableViewPane
+    public String getItemType() {
         return "File";
     }
 
+    public String getArtifactName() {
+        return artifactName;
+    }
     public int getNumTestFiles() {
         return isTestFile? 1 : 0 ;
     }
@@ -138,5 +146,9 @@ public class FileContext implements IReportableItem, Comparable<FileContext>{
     @Override
     public int compareTo(FileContext other) {
         return this.itemPath.compareToIgnoreCase(other.itemPath);
+    }
+
+    public String getItemPath() {
+        return itemPath;
     }
 }

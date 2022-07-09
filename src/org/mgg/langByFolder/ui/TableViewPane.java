@@ -18,23 +18,13 @@ public class TableViewPane extends BorderPane implements IReportEventsListener{
         this.rep = rep ;
         tableView = new TableView<>();
 
-        //@todo: getHeader method should be used here
-        TableColumn<FileContext, String> column1 =
-                new TableColumn<>("Item Path");
+        for(int i = 0; i < 8 ; i++ ) {
+            TableColumn<FileContext, String> col =
+                    new TableColumn<>(ReportOptions.getHeader(i));
 
-        column1.setCellValueFactory(
-                new PropertyValueFactory<>("itemPath"));
-
-
-        TableColumn<FileContext, String> column2 =
-                new TableColumn<>("Col 2");
-
-        column2.setCellValueFactory(
-                new PropertyValueFactory<>("artifactName"));
-
-
-        tableView.getColumns().add(column1);
-        tableView.getColumns().add(column2);
+            col.setCellValueFactory(new PropertyValueFactory<>(FileContext.getPropertyNameForColumn(i)));
+            tableView.getColumns().add(col);
+        }
 
         VBox content = new VBox(tableView);
 
@@ -45,7 +35,7 @@ public class TableViewPane extends BorderPane implements IReportEventsListener{
 
     @Override
     public void started() {
-
+        tableView.getItems().clear();
     }
 
     @Override

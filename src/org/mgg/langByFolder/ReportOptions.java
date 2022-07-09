@@ -24,7 +24,7 @@ public class ReportOptions {
     public Comparator<LanguageStats>  langStatComparator ;
     private final static List<String> validOptions = Arrays.asList("a","f","c","h","u","o","n");
 
-    private final String[] headers = {"Type","Path","Artifact","numServices","numTestFiles","# Subfolders","# Total Files","Languages"} ;
+    private static final String[] headers = {"Type","Path","Artifact","numServices","numTestFiles","# Subfolders","# Total Files","Languages"} ;
     public static String usageOptions =
         "\nLangByFolder <path> <options> <outFile.csv>" +
                 "\n\t<options>:" +
@@ -55,6 +55,9 @@ public class ReportOptions {
         initFoldersToExclude();
     }
 
+    public static String getHeader(int i) {
+        return headers[i] ;
+    }
     public boolean isExcludedFolder(String folderName) {
         return excludeFolders.contains(folderName) ;
     }

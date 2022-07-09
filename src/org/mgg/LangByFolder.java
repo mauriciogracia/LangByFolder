@@ -8,7 +8,6 @@ import org.mgg.langByFolder.ReportOptions;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,7 +50,7 @@ public class LangByFolder {
 
     private static void iterateFolder(DirectoryContext dirContext, ReportOptions reportOptions)  {
         try {
-            File folder = new File(dirContext.itemPath);
+            File folder = new File(dirContext.getItemPath());
             File[] folderItems = folder.listFiles();
             String childName ;
             String childPathStr ;
@@ -61,7 +60,7 @@ public class LangByFolder {
             if(folderItems != null) {
                 for (File folderItem : folderItems) {
                     childName = folderItem.getName();
-                    childPathStr = dirContext.itemPath + "/" + childName ;
+                    childPathStr = dirContext.getItemPath() + "/" + childName ;
 
                     if (reportOptions.showHiddenItems || (!folderItem.isHidden() && !childName.startsWith("."))) {
                         itemAttributes = Files.readAttributes(folderItem.toPath(), BasicFileAttributes.class);
@@ -101,7 +100,7 @@ public class LangByFolder {
         String subDirPath ;
 
         if(!reportOptions.isExcludedFolder(itemName)) {
-            subDirPath = dirContext.itemPath + "/" + itemName ;
+            subDirPath = dirContext.getItemPath() + "/" + itemName ;
             DirectoryContext dlSub = new DirectoryContext(subDirPath, reportOptions);
 
             if((reportOptions.reportDetailLevel == ReportDetailLevel.CUSTOM) && !artifacts.contains(dlSub.artifactName)) {

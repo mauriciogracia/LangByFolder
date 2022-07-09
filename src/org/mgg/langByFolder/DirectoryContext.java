@@ -103,7 +103,7 @@ public class DirectoryContext extends FileContext {
         return String.join(reportOptions.columnSeparator, parts) ;
     }
 
-    public String itemType() {
+    public String getItemType() {
         return "Dir";
     }
 }

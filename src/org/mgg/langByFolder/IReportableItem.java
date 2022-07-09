@@ -3,9 +3,8 @@ package org.mgg.langByFolder;
 public interface IReportableItem {
     void prepareParts(ReportOptions reportOptions) ;
     String toString(ReportOptions reportOptions);
-    String itemType() ;
-    //@todo; asdfasd
-    /* This could include these methods and implement them both for file and directory
+    String getItemType() ;
+    /*@todo include these methods and implement them both for file and directory
     getNumServices
     getNumTestFiles
     getNumSubfolders
