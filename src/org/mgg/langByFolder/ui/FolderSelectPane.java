@@ -18,7 +18,7 @@ public class FolderSelectPane extends BorderPane {
 
         content.setBorder(new Border(new BorderStroke(GraphicSettings.borderColor, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(2))));
         content.setTop(new Label("Folder to check...")) ;
-        content.setCenter(new TextField("path/to/folder/to/scan")) ;
+        content.setCenter(new TextField("C:\\DATOS\\repos\\LangByFolder")) ;
         content.setRight(btnSelectFolder);
         this.setPadding(GraphicSettings.borderMargin);
         this.setCenter(content) ;

@@ -2,10 +2,13 @@ package org.mgg.langByFolder;
 
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class ReportOptions {
     private final static String[] testExt = {"spec.ts","spec.py","spec.scala","test"} ;
+    public ArrayList<FileContext> items = new ArrayList<>();
     final LanguageExtensions testLang = new LanguageExtensions("TestFiles",testExt) ;
     final ArrayList<String> excludeFolders = new ArrayList<>();
     public String columnSeparator = ";";
@@ -148,10 +151,19 @@ public class ReportOptions {
 
         if((numArgs >= 1) && (numArgs <=  3))
         {
-            setRootFolder(args[0]) ;
-            output = System.out ;
+            String path ;
 
-            validArguments = parseOptions(args);
+            path = args[0] ;
+
+            if(Files.exists(Paths.get(path))) {
+                setRootFolder(path) ;
+                output = System.out ;
+                validArguments = parseOptions(args);
+            }
+            else {
+                errorMessage = "Path does not exist:" + path;
+                validArguments = false ;
+            }
 
         }
         else {

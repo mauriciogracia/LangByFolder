@@ -16,7 +16,6 @@ import java.util.Collections;
 import static org.mgg.langByFolder.ReportOptions.usageOptions;
 
 public class LangByFolder {
-    private final static ArrayList<FileContext> items = new ArrayList<>();
     private final static ArrayList<String> artifacts = new ArrayList<>();
 
     public static void main(String[] args) {
@@ -30,26 +29,19 @@ public class LangByFolder {
         }
         else {
             processRootFolder(reportOptions) ;
+            Collections.sort(reportOptions.items);
+            showResults(reportOptions);
         }
     }
     public static void processRootFolder(ReportOptions reportOptions) {
-        if(Files.exists(Paths.get(reportOptions.getRootFolder()))) {
-            DirectoryContext dc = new DirectoryContext(reportOptions.getRootFolder(), reportOptions);
-            iterateFolder(dc, reportOptions);
-
-            Collections.sort(items);
-
-            showResults(reportOptions);
-        }
-        else {
-            System.err.println("Path does not exist:" + reportOptions.getRootFolder());
-        }
+        DirectoryContext dc = new DirectoryContext(reportOptions.getRootFolder(), reportOptions);
+        iterateFolder(dc, reportOptions);
     }
 
     private static void showResults(ReportOptions reportOptions) {
         reportOptions.output.println(reportOptions.getHeader());
 
-        for (FileContext item : items) {
+        for (FileContext item : reportOptions.items) {
             reportOptions.output.println(item.toString(reportOptions));
         }
     }
@@ -80,7 +72,7 @@ public class LangByFolder {
                             FileContext childIL = new FileContext(childPathStr, reportOptions);
 
                             if (reportOptions.reportDetailLevel == ReportDetailLevel.ALL_ITEMS) {
-                                items.add(childIL);
+                                reportOptions.items.add(childIL);
                             }
                             dirContext.mergeFile(childIL);
                         }
@@ -90,7 +82,7 @@ public class LangByFolder {
             depthLevel--;
             //add the root folder stats
             if(depthLevel == 0) {
-                items.add(dirContext) ;
+               reportOptions.items.add(dirContext) ;
             }
         }
         catch (FileNotFoundException ex) {
@@ -114,10 +106,10 @@ public class LangByFolder {
 
             if((reportOptions.reportDetailLevel == ReportDetailLevel.CUSTOM) && !artifacts.contains(dlSub.artifactName)) {
                 artifacts.add(dlSub.artifactName);
-                items.add(dlSub);
+                reportOptions.items.add(dlSub);
             }
             else if((reportOptions.reportDetailLevel != ReportDetailLevel.CUSTOM)) {
-                items.add(dlSub);
+                reportOptions.items.add(dlSub);
             }
             iterateFolder(dlSub, reportOptions);
             dirContext.mergeDirectory(dlSub);
