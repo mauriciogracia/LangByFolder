@@ -1,5 +1,7 @@
 package org.mgg.langByFolder;
 
+import java.io.File;
+
 public class FileContext implements IReportableItem, Comparable<FileContext>{
     public String itemPath ;
     public String artifactName;
@@ -7,16 +9,14 @@ public class FileContext implements IReportableItem, Comparable<FileContext>{
     public boolean isTestFile;
     public String langName ;
 
+    String[] parts = new String[8] ;
+
     public FileContext(String itemPath, ReportOptions reportOptions) {
         this.itemPath = itemPath ;
         determineArtifact(itemPath, reportOptions) ;
         isService = itemPath.toLowerCase().contains("service") ;
         isTestFile = (reportOptions.testLang.isExtensionMatchedBy(itemPath) || reportOptions.testLang.isContainedBy(itemPath)) ;
         determineFileLanguage(itemPath, reportOptions);
-    }
-
-    public String getItemPath() {
-        return itemPath ;
     }
 
     private void determineFileLanguage(String fileName, ReportOptions reportOptions) {
@@ -70,9 +70,6 @@ public class FileContext implements IReportableItem, Comparable<FileContext>{
         artifactName = aux ;
     }
 
-    public final void setLanguageName(String langName) {
-        this.langName = langName ;
-    }
     public String getLangStats(ReportOptions reportOptions) {
 
         return langName +
@@ -84,35 +81,51 @@ public class FileContext implements IReportableItem, Comparable<FileContext>{
         return folder.substring(rootFolder.length()) ;
     }
 
-    public String toString(ReportOptions reportOptions) {
-        StringBuilder resp ;
+    public String getPart(int index) {
+        return this.parts[index] ;
+    }
 
-        resp = new StringBuilder() ;
 
-        //@todo: using StringJoiner here
-        if(reportOptions.reportDetailLevel != ReportDetailLevel.CUSTOM) {
-            String relPath = relativePath(itemPath, reportOptions.getRootFolder()) ;
+    private String rootArtifact(ReportOptions reportOptions) {
+        String rf = reportOptions.getRootFolder() ;
 
-            if(relPath.length()== 0) {
-                relPath = "ROOT" + reportOptions.columnSeparator + reportOptions.getRootFolder();
-                resp.append(relPath);
-            }
-            else {
-                resp.append(relPath);
-                resp.append(reportOptions.columnSeparator).append(artifactName);
-            }
+        //Get the last folder name as the artifact of the root folder
+        return rf.substring(rf.lastIndexOf(File.separatorChar)+1) ;
+    }
+    public final int preparePartsPathArtifact(ReportOptions reportOptions) {
+        int i = 0;
+
+        parts[i++] = itemType() ;
+        String relPath = relativePath(itemPath, reportOptions.getRootFolder()) ;
+
+        if(relPath.length()== 0) {
+            parts[i++] = reportOptions.getRootFolder() ;
+            parts[i++] = rootArtifact(reportOptions) ;
         }
         else {
-            resp.append(artifactName) ;
+            parts[i++] = relPath;
+            parts[i++] = artifactName;
         }
 
-        resp.append(reportOptions.columnSeparator).append(getNumServices());
-        resp.append(reportOptions.columnSeparator).append(getNumTestFiles());
-        resp.append(reportOptions.columnSeparator).append('$'); //subfolders
-        resp.append(reportOptions.columnSeparator).append(1); //numGiles
-        resp.append(reportOptions.columnSeparator).append(getLangStats(reportOptions));
+        return i ;
+    }
 
-        return resp.toString() ;
+    public void prepareParts(ReportOptions reportOptions) {
+        int i = preparePartsPathArtifact(reportOptions) ;
+
+        parts[i++] = String.valueOf(getNumServices());
+        parts[i++] = String.valueOf(getNumTestFiles());
+        parts[i++] = "-"; //subfolders
+        parts[i++] = "1"; //numFiles
+        parts[i] = getLangStats(reportOptions);
+    }
+    public String toString(ReportOptions reportOptions) {
+        prepareParts(reportOptions);
+        return String.join(reportOptions.columnSeparator, parts) ;
+    }
+
+    public String itemType() {
+        return "File";
     }
 
     public int getNumTestFiles() {

@@ -24,6 +24,7 @@ public class ReportOptions {
     public Comparator<LanguageStats>  langStatComparator ;
     private final static List<String> validOptions = Arrays.asList("a","f","c","h","u","o","n");
 
+    private final String[] headers = {"Type","Path","Artifact","numServices","numTestFiles","# Subfolders","# Total Files","Languages"} ;
     public static String usageOptions =
         "\nLangByFolder <path> <options> <outFile.csv>" +
                 "\n\t<options>:" +
@@ -122,19 +123,7 @@ public class ReportOptions {
     }
 
     public String getHeader() {
-        StringJoiner joiner = new StringJoiner(columnSeparator) ;
-
-        if(reportDetailLevel != ReportDetailLevel.CUSTOM) {
-            joiner.add("Folder");
-        }
-        joiner.add("Artifact");
-        joiner.add("isService");
-        joiner.add("numTestFiles");
-        joiner.add("# Subfolders");
-        joiner.add("# Total Files");
-        joiner.add("Languages");
-
-        return joiner.toString() ;
+        return String.join(columnSeparator, headers) ;
     }
 
     private void setDefaultReportOptions() {

@@ -88,39 +88,22 @@ public class DirectoryContext extends FileContext {
         return folder.substring(rootFolder.length()) ;
     }
 
+    public void prepareParts(ReportOptions reportOptions)
+    {
+        int i = preparePartsPathArtifact(reportOptions) ;
+
+        parts[i++] = String.valueOf(numServices);
+        parts[i++] = String.valueOf(numTestFiles);
+        parts[i++] = String.valueOf(numSubfolders) ;
+        parts[i++] = String.valueOf(numFiles);
+        parts[i] = getLangStats(reportOptions);
+    }
     public String toString(ReportOptions reportOptions) {
-        StringJoiner joiner ;
-        String relPath ;
-
-        joiner = new StringJoiner(reportOptions.columnSeparator);
-
-        if(reportOptions.reportDetailLevel != ReportDetailLevel.CUSTOM) {
-            relPath = relativePath(itemPath, reportOptions.getRootFolder()) ;
-
-            if(relPath.length()== 0) {
-                relPath = reportOptions.getRootFolder() + reportOptions.columnSeparator + "ROOT" ;
-                joiner.add(relPath);
-            }
-            else {
-                joiner.add(relPath);
-                joiner.add(artifactName);
-            }
-        }
-        else {
-            joiner.add(artifactName) ;
-        }
-
-        joiner.add("" + numServices);
-        joiner.add("" + numTestFiles);
-        joiner.add("" + numSubfolders);
-        joiner.add("" + getNumFiles());
-        joiner.add(getLangStats(reportOptions));
-
-        return joiner.toString() ;
+        prepareParts(reportOptions);
+        return String.join(reportOptions.columnSeparator, parts) ;
     }
 
-    public int getNumFiles() {
-        return numFiles;
+    public String itemType() {
+        return "Dir";
     }
-
 }
