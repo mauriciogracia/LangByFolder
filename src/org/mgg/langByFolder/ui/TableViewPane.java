@@ -27,6 +27,7 @@ public class TableViewPane extends BorderPane implements IReportEventsListener{
         }
 
         VBox content = new VBox(tableView);
+        VBox.setVgrow(tableView,Priority.ALWAYS) ;
 
         content.setBorder(new Border(new BorderStroke(GraphicSettings.borderColor, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(2))));
         this.setPadding(GraphicSettings.borderMargin);
