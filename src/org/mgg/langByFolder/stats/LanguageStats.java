@@ -1,10 +1,10 @@
-package org.mgg.langByFolder;
+package org.mgg.langByFolder.stats;
 
 public class LanguageStats implements Comparable<LanguageStats>{
     public String languageName;
     private int numFiles;
 
-    LanguageStats(String langName) {
+    public LanguageStats(String langName) {
         languageName = langName ;
         numFiles = 0;
     }

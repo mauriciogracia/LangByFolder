@@ -4,10 +4,11 @@ import javafx.event.EventHandler;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
-import org.mgg.langByFolder.CompareByLanguageName;
-import org.mgg.langByFolder.CompareByLanguageOccurrence;
+import org.mgg.langByFolder.stats.CompareByLanguageName;
+import org.mgg.langByFolder.stats.CompareByLanguageOccurrence;
 import org.mgg.langByFolder.ReportDetailLevel;
 import org.mgg.langByFolder.ReportOptions;
+import org.mgg.langByFolder.stats.LanguageStatsComparatorType;
 
 public class ReportOptionsPane extends BorderPane implements EventHandler<MouseEvent> {
     private final ReportOptions reportOptions ;
@@ -98,9 +99,12 @@ public class ReportOptionsPane extends BorderPane implements EventHandler<MouseE
             radioArtifactsOnly.setSelected(true);
         }
 
-        //@todo create an abstract class LanguageStatComparator that includes an ID a getID method and a enumeration to perform this if...
-        //if(reportOptions.langStatComparator =)
-        radioStatsOrderByOccurrence.setSelected(true);
+        if(reportOptions.langStatComparator.comparatorType == LanguageStatsComparatorType.BY_LANGUAGE_OCURRENCE) {
+            radioStatsOrderByOccurrence.setSelected(true);
+        }
+        else {
+            radioStatsOrderByName.setSelected(true);
+        }
     }
 
     @Override

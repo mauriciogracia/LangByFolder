@@ -30,6 +30,8 @@ public class FileContext implements IReportableItem, Comparable<FileContext>{
         int i = 0 ;
         int max ;
 
+        //@todo: handle files without extension, otherwise the whole path is being shown
+        //@todo: handle / vs \ when concatenating paths (win vs linux)
         langName = "unknown" ;
         max = ReportOptions.supportedLanguageExt.size() ;
 

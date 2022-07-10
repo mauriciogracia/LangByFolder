@@ -1,5 +1,7 @@
 package org.mgg.langByFolder;
 
+import org.mgg.langByFolder.stats.LanguageStats;
+
 import java.util.ArrayList;
 
 public class DirectoryContext extends FileContext {
@@ -53,7 +55,7 @@ public class DirectoryContext extends FileContext {
         }
 
         if(!found) {
-            LanguageStats ls =new LanguageStats(file.langName) ;
+            LanguageStats ls = new LanguageStats(file.langName) ;
             ls.increaseNumFiles(1);
             langStats.add(ls) ;
         }

@@ -1,5 +1,10 @@
 package org.mgg.langByFolder;
 
+import org.mgg.langByFolder.stats.CompareByLanguageName;
+import org.mgg.langByFolder.stats.CompareByLanguageOccurrence;
+import org.mgg.langByFolder.stats.LanguageStats;
+import org.mgg.langByFolder.stats.LanguageStatsComparator;
+
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 import java.nio.file.Files;
@@ -22,7 +27,7 @@ public class ReportOptions {
     public boolean showUnknownExtensions  ;
     public ReportDetailLevel reportDetailLevel = ReportDetailLevel.ALL_ITEMS ;
     public PrintStream output ;
-    public Comparator<LanguageStats>  langStatComparator ;
+    public LanguageStatsComparator langStatComparator ;
     private final static List<String> validOptions = Arrays.asList("a","f","c","h","u","o","n");
 
     private static final String[] headers = {"Type","Path","Artifact","numServices","numTestFiles","# SubFolders","# Files","Languages"} ;
