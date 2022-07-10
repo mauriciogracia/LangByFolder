@@ -9,7 +9,8 @@ public class TopPane extends BorderPane {
         BorderPane content = new BorderPane();
         content.setTop(new FolderSelectPane(rep)) ;
         content.setCenter(new ReportOptionsPane(rep)) ;
-        ProcessExportPane pep = new ProcessExportPane(rep, tvp) ;
+        ProcessExportPane pep = new ProcessExportPane(rep) ;
+        pep.addReportEventListener(tvp);
         content.setBottom(pep);
         this.setCenter(content) ;
     }

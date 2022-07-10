@@ -97,6 +97,10 @@ public class ReportOptionsPane extends BorderPane implements EventHandler<MouseE
         else if (reportOptions.reportDetailLevel == ReportDetailLevel.CUSTOM) {
             radioArtifactsOnly.setSelected(true);
         }
+
+        //@todo create an abstract class LanguageStatComparator that includes an ID a getID method and a enumeration to perform this if...
+        //if(reportOptions.langStatComparator =)
+        radioStatsOrderByOccurrence.setSelected(true);
     }
 
     @Override
