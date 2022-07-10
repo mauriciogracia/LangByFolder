@@ -1,8 +1,8 @@
 package org.mgg.langByFolder.ui;
 
-import javafx.event.EventHandler;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import org.mgg.langByFolder.stats.CompareByLanguageName;
 import org.mgg.langByFolder.stats.CompareByLanguageOccurrence;
@@ -10,7 +10,7 @@ import org.mgg.langByFolder.ReportDetailLevel;
 import org.mgg.langByFolder.ReportOptions;
 import org.mgg.langByFolder.stats.LanguageStatsComparatorType;
 
-public class ReportOptionsPane extends BorderPane implements EventHandler<MouseEvent> {
+public class ReportOptionsPane extends BorderPane implements ChangeListener<Toggle> {
     private final ReportOptions reportOptions ;
     RadioButton radioFoldersOnly ;
     RadioButton radioAllItems ;
@@ -34,17 +34,14 @@ public class ReportOptionsPane extends BorderPane implements EventHandler<MouseE
         content.setBorder(new Border(new BorderStroke(GraphicSettings.borderColor, BorderStrokeStyle.SOLID, CornerRadii.EMPTY, new BorderWidths(2))));
         ToggleGroup tg = new ToggleGroup();
         radioFoldersOnly = new RadioButton("Folders only") ;
-        radioFoldersOnly.addEventFilter(MouseEvent.MOUSE_CLICKED, this);
-
         radioAllItems = new RadioButton("Files & Folders") ;
-        radioAllItems.addEventFilter(MouseEvent.MOUSE_CLICKED, this);
-
         radioArtifactsOnly = new RadioButton("Artifacts only") ;
-        radioArtifactsOnly.addEventFilter(MouseEvent.MOUSE_CLICKED, this);
 
         radioFoldersOnly.setToggleGroup(tg);
         radioAllItems.setToggleGroup(tg);
         radioArtifactsOnly.setToggleGroup(tg);
+
+        tg.selectedToggleProperty().addListener(this);
 
         //1st row - label for options
         row = 0 ;
@@ -57,10 +54,10 @@ public class ReportOptionsPane extends BorderPane implements EventHandler<MouseE
         content.add(radioArtifactsOnly,2,row);
 
         cbShowHiddenFilesFolder = new CheckBox("Hidden files/folder") ;
-        cbShowHiddenFilesFolder.addEventFilter(MouseEvent.MOUSE_CLICKED, this);
+        cbShowHiddenFilesFolder.selectedProperty().addListener((observable, oldValue, newValue) -> reportOptions.showHiddenItems = newValue);
 
         cbShowUnknownExtensions = new CheckBox("Unknown extensions") ;
-        cbShowUnknownExtensions.addEventFilter(MouseEvent.MOUSE_CLICKED, this);
+        cbShowUnknownExtensions.selectedProperty().addListener((observable, oldValue, newValue) -> reportOptions.showUnknownExtensions = newValue);
 
         //3rd row
         row++ ;
@@ -70,13 +67,12 @@ public class ReportOptionsPane extends BorderPane implements EventHandler<MouseE
         //4th row
         ToggleGroup tg2 = new ToggleGroup();
         radioStatsOrderByOccurrence = new RadioButton("Order stats by occurrence") ;
-        radioStatsOrderByOccurrence.addEventFilter(MouseEvent.MOUSE_CLICKED, this);
-
         radioStatsOrderByName = new RadioButton("Order stats by name") ;
-        radioStatsOrderByName.addEventFilter(MouseEvent.MOUSE_CLICKED, this);
 
         radioStatsOrderByOccurrence.setToggleGroup(tg2);
         radioStatsOrderByName.setToggleGroup(tg2);
+
+        tg2.selectedToggleProperty().addListener(this);
 
         row++;
         content.add(radioStatsOrderByOccurrence,0,row);
@@ -99,6 +95,9 @@ public class ReportOptionsPane extends BorderPane implements EventHandler<MouseE
             radioArtifactsOnly.setSelected(true);
         }
 
+        cbShowHiddenFilesFolder.setSelected(reportOptions.showHiddenItems) ;
+        cbShowUnknownExtensions.setSelected(reportOptions.showUnknownExtensions);
+
         if(reportOptions.langStatComparator.comparatorType == LanguageStatsComparatorType.BY_LANGUAGE_OCURRENCE) {
             radioStatsOrderByOccurrence.setSelected(true);
         }
@@ -108,21 +107,15 @@ public class ReportOptionsPane extends BorderPane implements EventHandler<MouseE
     }
 
     @Override
-    public void handle(MouseEvent event) {
-        Object srcComponent =event.getSource() ;
-
-        if(srcComponent.equals(radioFoldersOnly)) {
+    public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
+        if(newValue.equals(radioFoldersOnly)) {
             reportOptions.reportDetailLevel = ReportDetailLevel.FOLDER ;
-        } else if(srcComponent.equals(radioAllItems)) {
+        } else if(newValue.equals(radioAllItems)) {
             reportOptions.reportDetailLevel = ReportDetailLevel.ALL_ITEMS ;
-        } else if(srcComponent.equals(radioArtifactsOnly)) {
+        } else if(newValue.equals(radioArtifactsOnly)) {
             reportOptions.reportDetailLevel = ReportDetailLevel.CUSTOM ;
-        } else if(srcComponent.equals(cbShowHiddenFilesFolder)) {
-            reportOptions.showHiddenItems = ((CheckBox)srcComponent).isSelected() ;
-        } else if(srcComponent.equals(cbShowUnknownExtensions)) {
-            reportOptions.showUnknownExtensions = ((CheckBox)srcComponent).isSelected() ;
-        } else if(srcComponent.equals(radioStatsOrderByOccurrence) || srcComponent.equals(radioStatsOrderByName)) {
-            reportOptions.langStatComparator = srcComponent.equals(radioStatsOrderByOccurrence) ? compareByLanguageOccurrence: compareByLanguageName;
+        } else if(newValue.equals(radioStatsOrderByOccurrence) || newValue.equals(radioStatsOrderByName)) {
+            reportOptions.langStatComparator = newValue.equals(radioStatsOrderByOccurrence) ? compareByLanguageOccurrence: compareByLanguageName;
         }
     }
 }
