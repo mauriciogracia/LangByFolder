@@ -4,6 +4,8 @@ import javafx.event.EventHandler;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import org.mgg.langByFolder.CompareByLanguageName;
+import org.mgg.langByFolder.CompareByLanguageOccurrence;
 import org.mgg.langByFolder.ReportDetailLevel;
 import org.mgg.langByFolder.ReportOptions;
 
@@ -16,9 +18,13 @@ public class ReportOptionsPane extends BorderPane implements EventHandler<MouseE
     CheckBox cbShowUnknownExtensions  ;
     RadioButton radioStatsOrderByOccurrence  ;
     RadioButton radioStatsOrderByName  ;
+    CompareByLanguageOccurrence compareByLanguageOccurrence;
+    CompareByLanguageName compareByLanguageName;
     public ReportOptionsPane(ReportOptions rep)  {
         super() ;
         reportOptions = rep ;
+        compareByLanguageName = new CompareByLanguageName();
+        compareByLanguageOccurrence = new CompareByLanguageOccurrence();
 
         int row ;
         GridPane content = new GridPane();
@@ -50,7 +56,10 @@ public class ReportOptionsPane extends BorderPane implements EventHandler<MouseE
         content.add(radioArtifactsOnly,2,row);
 
         cbShowHiddenFilesFolder = new CheckBox("Hidden files/folder") ;
+        cbShowHiddenFilesFolder.addEventFilter(MouseEvent.MOUSE_CLICKED, this);
+
         cbShowUnknownExtensions = new CheckBox("Unknown extensions") ;
+        cbShowUnknownExtensions.addEventFilter(MouseEvent.MOUSE_CLICKED, this);
 
         //3rd row
         row++ ;
@@ -60,7 +69,10 @@ public class ReportOptionsPane extends BorderPane implements EventHandler<MouseE
         //4th row
         ToggleGroup tg2 = new ToggleGroup();
         radioStatsOrderByOccurrence = new RadioButton("Order stats by occurrence") ;
+        radioStatsOrderByOccurrence.addEventFilter(MouseEvent.MOUSE_CLICKED, this);
+
         radioStatsOrderByName = new RadioButton("Order stats by name") ;
+        radioStatsOrderByName.addEventFilter(MouseEvent.MOUSE_CLICKED, this);
 
         radioStatsOrderByOccurrence.setToggleGroup(tg2);
         radioStatsOrderByName.setToggleGroup(tg2);
@@ -79,8 +91,13 @@ public class ReportOptionsPane extends BorderPane implements EventHandler<MouseE
         if (reportOptions.reportDetailLevel == ReportDetailLevel.FOLDER) {
             radioFoldersOnly.setSelected(true);
         }
+        else if (reportOptions.reportDetailLevel == ReportDetailLevel.ALL_ITEMS) {
+            radioAllItems.setSelected(true);
+        }
+        else if (reportOptions.reportDetailLevel == ReportDetailLevel.CUSTOM) {
+            radioArtifactsOnly.setSelected(true);
+        }
     }
-
 
     @Override
     public void handle(MouseEvent event) {
@@ -92,6 +109,12 @@ public class ReportOptionsPane extends BorderPane implements EventHandler<MouseE
             reportOptions.reportDetailLevel = ReportDetailLevel.ALL_ITEMS ;
         } else if(srcComponent.equals(radioArtifactsOnly)) {
             reportOptions.reportDetailLevel = ReportDetailLevel.CUSTOM ;
+        } else if(srcComponent.equals(cbShowHiddenFilesFolder)) {
+            reportOptions.showHiddenItems = ((CheckBox)srcComponent).isSelected() ;
+        } else if(srcComponent.equals(cbShowUnknownExtensions)) {
+            reportOptions.showUnknownExtensions = ((CheckBox)srcComponent).isSelected() ;
+        } else if(srcComponent.equals(radioStatsOrderByOccurrence) || srcComponent.equals(radioStatsOrderByName)) {
+            reportOptions.langStatComparator = srcComponent.equals(radioStatsOrderByOccurrence) ? compareByLanguageOccurrence: compareByLanguageName;
         }
     }
 }
