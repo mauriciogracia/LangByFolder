@@ -16,16 +16,14 @@ public class LangByFolderGUI extends Application {
     }
 
     @Override public void start(Stage stage) {
-        Text text = new Text(10, 40, "Hello World!");
-        text.setFont(new Font(40));
-
         BorderPane borderPane = new BorderPane();
         Scene scene = new Scene(borderPane) ;
 
         ReportOptions rep = new ReportOptions() ;
-        TableViewPane tvp = new TableViewPane(rep) ;
-        borderPane.setTop(new TopPane(tvp,rep));
-        borderPane.setCenter(tvp);
+        TableViewPane tableViewPane = new TableViewPane(rep) ;
+        borderPane.setTop(new TopPane(tableViewPane,rep));
+        borderPane.setCenter(tableViewPane);
+
 
         stage.setTitle("LangByFolder");
         stage.setScene(scene);

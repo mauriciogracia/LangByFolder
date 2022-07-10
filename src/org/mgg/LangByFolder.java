@@ -26,7 +26,7 @@ public class LangByFolder {
         }
         else {
             processRootFolder(reportOptions) ;
-            Collections.sort(reportOptions.items);
+
             showResults(reportOptions);
         }
     }
@@ -34,6 +34,7 @@ public class LangByFolder {
         reportOptions.clear();
         DirectoryContext dc = new DirectoryContext(reportOptions.getRootFolder(), reportOptions);
         iterateFolder(dc, reportOptions);
+        Collections.sort(reportOptions.items);
     }
 
     private static void showResults(ReportOptions reportOptions) {
