@@ -59,7 +59,8 @@ public class DirectoryContext extends FileContext {
         }
     }
 
-    public String getLangStats(ReportOptions reportOptions) {
+    public String getLangStats() {
+        //@todo use StrinJoin or convert to actual TableView columns
         StringBuilder langStatsStr = new StringBuilder();
         int max ;
 
@@ -99,15 +100,6 @@ public class DirectoryContext extends FileContext {
                 langStats.add(dls) ;
             }
         }
-    }
-
-    private static String relativePath(String folder, String rootFolder) {
-        return folder.substring(rootFolder.length()) ;
-    }
-
-    public String toString(ReportOptions reportOptions) {
-        prepareParts(reportOptions);
-        return String.join(reportOptions.columnSeparator, parts) ;
     }
 
     public String getItemType() {

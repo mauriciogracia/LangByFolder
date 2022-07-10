@@ -29,7 +29,7 @@ public class LangByFolderGUI extends Application {
 
         stage.setTitle("LangByFolder");
         stage.setScene(scene);
-        stage.sizeToScene();
+        stage.setMaximized(true);
         stage.show();
     }
 }

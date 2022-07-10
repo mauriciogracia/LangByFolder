@@ -1,8 +1,8 @@
 package org.mgg.langByFolder;
 
 public interface IReportableItem {
-    void prepareParts(ReportOptions reportOptions) ;
-    String toString(ReportOptions reportOptions);
+    void prepareParts() ;
+    String toString();
     String getItemType() ;
     int getNumServices() ;
     int getNumTestFiles() ;

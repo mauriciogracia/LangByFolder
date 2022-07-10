@@ -35,7 +35,7 @@ public class ReportOptionsPane extends BorderPane implements EventHandler<MouseE
         radioFoldersOnly = new RadioButton("Folders only") ;
         radioFoldersOnly.addEventFilter(MouseEvent.MOUSE_CLICKED, this);
 
-        radioAllItems = new RadioButton("All Items") ;
+        radioAllItems = new RadioButton("Files & Folders") ;
         radioAllItems.addEventFilter(MouseEvent.MOUSE_CLICKED, this);
 
         radioArtifactsOnly = new RadioButton("Artifacts only") ;
@@ -51,8 +51,8 @@ public class ReportOptionsPane extends BorderPane implements EventHandler<MouseE
 
         //2nd row
         row++;
-        content.add(radioFoldersOnly,0,row);
-        content.add(radioAllItems,1,row);
+        content.add(radioAllItems,0,row);
+        content.add(radioFoldersOnly,1,row);
         content.add(radioArtifactsOnly,2,row);
 
         cbShowHiddenFilesFolder = new CheckBox("Hidden files/folder") ;

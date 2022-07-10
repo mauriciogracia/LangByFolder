@@ -8,23 +8,24 @@ public class FileContext implements IReportableItem, Comparable<FileContext>{
     public boolean isService;
     public boolean isTestFile;
     public String langName ;
-
+    protected ReportOptions reportOptions ;
     String[] parts = new String[8] ;
-    private final static String[] propertyByColumn = {"itemType","itemPath","ArtifactName","numServices","numTestFiles","numSubFolders","numFiles","itemPath"};
+    private final static String[] propertyByColumn = {"itemType","itemPath","ArtifactName","numServices","numTestFiles","numSubFolders","numFiles","langStats"};
 
-    public FileContext(String itemPath, ReportOptions reportOptions) {
+    public FileContext(String itemPath, ReportOptions rep) {
+        this.reportOptions = rep ;
         this.itemPath = itemPath ;
-        determineArtifact(itemPath, reportOptions) ;
+        determineArtifact(itemPath) ;
         isService = itemPath.toLowerCase().contains("service") ;
         isTestFile = (reportOptions.testLang.isExtensionMatchedBy(itemPath) || reportOptions.testLang.isContainedBy(itemPath)) ;
-        determineFileLanguage(itemPath, reportOptions);
+        determineFileLanguage(itemPath);
     }
 
     public static String getPropertyNameForColumn(int col) {
         return propertyByColumn[col]  ;
     }
 
-    private void determineFileLanguage(String fileName, ReportOptions reportOptions) {
+    private void determineFileLanguage(String fileName) {
         boolean match ;
         int i = 0 ;
         int max ;
@@ -51,7 +52,7 @@ public class FileContext implements IReportableItem, Comparable<FileContext>{
             langName += "(" + ext + ")" ;
         }
     }
-    private void determineArtifact(String path, ReportOptions reportOptions) {
+    private void determineArtifact(String path) {
         int pos ;
         String aux ;
 
@@ -75,7 +76,7 @@ public class FileContext implements IReportableItem, Comparable<FileContext>{
         artifactName = aux ;
     }
 
-    public String getLangStats(ReportOptions reportOptions) {
+    public String getLangStats() {
 
         return langName +
                 reportOptions.columnSeparator +
@@ -86,17 +87,13 @@ public class FileContext implements IReportableItem, Comparable<FileContext>{
         return folder.substring(rootFolder.length()) ;
     }
 
-    public String getPart(int index) {
-        return this.parts[index] ;
-    }
-
-    private String rootArtifact(ReportOptions reportOptions) {
+    private String getRootArtifact() {
         String rf = reportOptions.getRootFolder() ;
 
         //Get the last folder name as the artifact of the root folder
         return rf.substring(rf.lastIndexOf(File.separatorChar)+1) ;
     }
-    public final int preparePartsPathArtifact(ReportOptions reportOptions) {
+    public final int preparePartsPathArtifact() {
         int i = 0;
 
         parts[i++] = getItemType() ;
@@ -104,7 +101,7 @@ public class FileContext implements IReportableItem, Comparable<FileContext>{
 
         if(relPath.length()== 0) {
             parts[i++] = reportOptions.getRootFolder() ;
-            parts[i++] = rootArtifact(reportOptions) ;
+            parts[i++] = getRootArtifact() ;
         }
         else {
             parts[i++] = relPath;
@@ -114,17 +111,17 @@ public class FileContext implements IReportableItem, Comparable<FileContext>{
         return i ;
     }
 
-    public final void prepareParts(ReportOptions reportOptions) {
-        int i = preparePartsPathArtifact(reportOptions) ;
+    public final void prepareParts() {
+        int i = preparePartsPathArtifact() ;
 
         parts[i++] = String.valueOf(getNumServices());
         parts[i++] = String.valueOf(getNumTestFiles());
         parts[i++] = String.valueOf(getNumSubFolders());
         parts[i++] = String.valueOf(getNumFiles());
-        parts[i] = getLangStats(reportOptions);
+        parts[i] = getLangStats();
     }
-    public String toString(ReportOptions reportOptions) {
-        prepareParts(reportOptions);
+    public String toString() {
+        prepareParts();
         return String.join(reportOptions.columnSeparator, parts) ;
     }
 

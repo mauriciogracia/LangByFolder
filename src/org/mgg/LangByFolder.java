@@ -40,7 +40,7 @@ public class LangByFolder {
         reportOptions.output.println(reportOptions.getHeader());
 
         for (FileContext item : reportOptions.items) {
-            reportOptions.output.println(item.toString(reportOptions));
+            reportOptions.output.println(item.toString());
         }
     }
 
