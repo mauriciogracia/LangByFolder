@@ -30,8 +30,6 @@ public class FileContext implements IReportableItem, Comparable<FileContext>{
         int i = 0 ;
         int max ;
 
-        //@todo: handle files without extension, otherwise the whole path is being shown
-        //@todo: handle / vs \ when concatenating paths (win vs linux)
         langName = "unknown" ;
         max = ReportOptions.supportedLanguageExt.size() ;
 
@@ -50,7 +48,7 @@ public class FileContext implements IReportableItem, Comparable<FileContext>{
             String ext ;
             int pos = fileName.lastIndexOf('.') ;
 
-            ext = (pos >= 0) ? fileName.substring(pos) : fileName ;
+            ext = (pos >= 0) ? fileName.substring(pos) : fileName.substring(fileName.lastIndexOf(File.separator)+1) ;
             langName += "(" + ext + ")" ;
         }
     }
@@ -63,14 +61,14 @@ public class FileContext implements IReportableItem, Comparable<FileContext>{
         }
         else {
             aux = path.substring(reportOptions.getRootFolderPathLength());
-            pos = aux.indexOf('/', 1);
+            pos = aux.indexOf(File.separator, 1);
 
             //The name of the first level folder is used as the base/component/artifact name
             if (pos >= 0) {
                 aux = aux.substring(1, pos);
             }
 
-            if (aux.startsWith("/")) {
+            if (aux.startsWith(File.separator)) {
                 aux = aux.substring(1);
             }
         }

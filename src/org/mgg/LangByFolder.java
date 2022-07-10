@@ -60,7 +60,7 @@ public class LangByFolder {
             if(folderItems != null) {
                 for (File folderItem : folderItems) {
                     childName = folderItem.getName();
-                    childPathStr = dirContext.getItemPath() + "/" + childName ;
+                    childPathStr = dirContext.getItemPath() + File.separator + childName ;
 
                     if (reportOptions.showHiddenItems || (!folderItem.isHidden() && !childName.startsWith("."))) {
                         itemAttributes = Files.readAttributes(folderItem.toPath(), BasicFileAttributes.class);
@@ -100,7 +100,7 @@ public class LangByFolder {
         String subDirPath ;
 
         if(!reportOptions.isExcludedFolder(itemName)) {
-            subDirPath = dirContext.getItemPath() + "/" + itemName ;
+            subDirPath = dirContext.getItemPath() + File.separator + itemName ;
             DirectoryContext dlSub = new DirectoryContext(subDirPath, reportOptions);
 
             if((reportOptions.reportDetailLevel == ReportDetailLevel.CUSTOM) && !reportOptions.artifacts.contains(dlSub.artifactName)) {
