@@ -10,7 +10,7 @@ public class FileContext implements IReportableItem, Comparable<FileContext>{
     public String langName ;
 
     String[] parts = new String[8] ;
-    private final static String[] propertyByColumn = {"itemType","itemPath","ArtifactName","itemPath","itemPath","itemPath","itemPath","itemPath"};
+    private final static String[] propertyByColumn = {"itemType","itemPath","ArtifactName","numServices","numTestFiles","numSubFolders","numFiles","itemPath"};
 
     public FileContext(String itemPath, ReportOptions reportOptions) {
         this.itemPath = itemPath ;
@@ -114,13 +114,13 @@ public class FileContext implements IReportableItem, Comparable<FileContext>{
         return i ;
     }
 
-    public void prepareParts(ReportOptions reportOptions) {
+    public final void prepareParts(ReportOptions reportOptions) {
         int i = preparePartsPathArtifact(reportOptions) ;
 
         parts[i++] = String.valueOf(getNumServices());
         parts[i++] = String.valueOf(getNumTestFiles());
-        parts[i++] = "-"; //subfolders
-        parts[i++] = "1"; //numFiles
+        parts[i++] = String.valueOf(getNumSubFolders());
+        parts[i++] = String.valueOf(getNumFiles());
         parts[i] = getLangStats(reportOptions);
     }
     public String toString(ReportOptions reportOptions) {
@@ -138,6 +138,16 @@ public class FileContext implements IReportableItem, Comparable<FileContext>{
     }
     public int getNumTestFiles() {
         return isTestFile? 1 : 0 ;
+    }
+
+    @Override
+    public int getNumSubFolders() {
+        return 0;
+    }
+
+    @Override
+    public int getNumFiles() {
+        return 1;
     }
 
     public int getNumServices() {

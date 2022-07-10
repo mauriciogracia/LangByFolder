@@ -1,10 +1,9 @@
 package org.mgg.langByFolder;
 
 import java.util.ArrayList;
-import java.util.StringJoiner;
 
 public class DirectoryContext extends FileContext {
-    private int numSubfolders;
+    private int numSubFolders;
     private int numFiles ;
     private int numTestFiles ;
     private int numServices;
@@ -12,13 +11,31 @@ public class DirectoryContext extends FileContext {
 
     public DirectoryContext(String itemPath, ReportOptions reportOptions) {
         super(itemPath, reportOptions) ;
-        numSubfolders = 0 ;
+        numSubFolders = 0 ;
         numFiles = 0;
         numTestFiles = 0 ;
         numServices = 0 ;
         langStats = new ArrayList<>() ;
     }
 
+    @Override
+    public int getNumTestFiles() {
+        return numTestFiles;
+    }
+
+    @Override
+    public int getNumSubFolders() {
+        return numSubFolders;
+    }
+
+    @Override
+    public int getNumFiles() {
+        return numFiles;
+    }
+
+    public int getNumServices() {
+        return numServices ;
+    }
     public void mergeFile(FileContext file) {
         this.numFiles++;
         this.numTestFiles += getNumTestFiles() ;
@@ -66,7 +83,7 @@ public class DirectoryContext extends FileContext {
         int pos ;
 
         numFiles += subItem.numFiles;
-        numSubfolders += subItem.numSubfolders +1 ;
+        numSubFolders += subItem.numSubFolders +1 ;
         numTestFiles += subItem.numTestFiles ;
         numServices += subItem.numServices ;
 
@@ -88,16 +105,6 @@ public class DirectoryContext extends FileContext {
         return folder.substring(rootFolder.length()) ;
     }
 
-    public void prepareParts(ReportOptions reportOptions)
-    {
-        int i = preparePartsPathArtifact(reportOptions) ;
-
-        parts[i++] = String.valueOf(numServices);
-        parts[i++] = String.valueOf(numTestFiles);
-        parts[i++] = String.valueOf(numSubfolders) ;
-        parts[i++] = String.valueOf(numFiles);
-        parts[i] = getLangStats(reportOptions);
-    }
     public String toString(ReportOptions reportOptions) {
         prepareParts(reportOptions);
         return String.join(reportOptions.columnSeparator, parts) ;

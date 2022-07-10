@@ -25,7 +25,7 @@ public class ReportOptions {
     public Comparator<LanguageStats>  langStatComparator ;
     private final static List<String> validOptions = Arrays.asList("a","f","c","h","u","o","n");
 
-    private static final String[] headers = {"Type","Path","Artifact","numServices","numTestFiles","# Subfolders","# Total Files","Languages"} ;
+    private static final String[] headers = {"Type","Path","Artifact","numServices","numTestFiles","# SubFolders","# Files","Languages"} ;
     public static String usageOptions =
         "\nLangByFolder <path> <options> <outFile.csv>" +
                 "\n\t<options>:" +
